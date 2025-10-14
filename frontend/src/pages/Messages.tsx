@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import axios from '../config/axios'
 import { connectSocket, onMessage, offMessage } from '../lib/socket'
 
@@ -7,6 +7,8 @@ export default function Messages() {
 	const [selected, setSelected] = useState<any | null>(null)
 	const [thread, setThread] = useState<any[]>([])
 	const [text, setText] = useState('')
+  const [query, setQuery] = useState('')
+  const [matches, setMatches] = useState<any[]>([])
 
 	const loadConvos = async () => {
 		const res = await axios.get('/messages/conversations')
@@ -18,6 +20,17 @@ export default function Messages() {
 	}
 
 	useEffect(() => { loadConvos() }, [])
+
+  useEffect(() => {
+    const t = setTimeout(async () => {
+      if (!query.trim()) { setMatches([]); return }
+      try {
+        const res = await axios.get('/users/search', { params: { q: query, limit: 8 } })
+        setMatches(res.data.data || [])
+      } catch { setMatches([]) }
+    }, 250)
+    return () => clearTimeout(t)
+  }, [query])
 	useEffect(() => {
 		const userId = localStorage.getItem('userId')
 		connectSocket(userId || undefined)
@@ -42,6 +55,16 @@ export default function Messages() {
 		<div className="p-6 grid gap-6 md:grid-cols-[260px_1fr]">
 			<div className="rounded-2xl p-4 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs">
 				<h3 className="font-semibold mb-3">Conversations</h3>
+        <div className="mb-2">
+          <input className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" placeholder="Find people by username or email" value={query} onChange={e=>setQuery(e.target.value)} />
+          {matches.length > 0 && (
+            <div className="mt-1 border border-black/5 dark:border-white/10 rounded divide-y max-h-60 overflow-auto">
+              {matches.map(u => (
+                <button key={u.id} className="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-white/10" onClick={() => { setSelected(u); loadThread(u.id); setQuery(''); setMatches([]) }}>{u.username} <span className="text-xs text-gray-500">{u.email}</span></button>
+              ))}
+            </div>
+          )}
+        </div>
 				<ul className="space-y-1">
 					{convos.map(u => (
 						<li key={u.id}><button className={`w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-white/10 ${selected?.id === u.id ? 'bg-gray-100 dark:bg-white/10' : ''}`} onClick={() => { setSelected(u); loadThread(u.id) }}>{u.username}</button></li>

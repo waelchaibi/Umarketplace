@@ -13,6 +13,7 @@ import { initDatabase } from './services/database-init.js';
 import { startScheduler } from './services/scheduler.js';
 
 import routes from './routes/index.js';
+import userRoutes from './routes/user.routes.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -28,6 +29,7 @@ app.use(morgan('dev'));
 app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 
 app.use('/api', apiLimiter, routes);
+app.use('/api/users', userRoutes);
 
 app.use((req, res) => res.status(404).json({ success: false, error: 'Not Found' }));
 app.use(errorHandler);

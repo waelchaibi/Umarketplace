@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import axios from '../config/axios'
 import { useParams } from 'react-router-dom'
 import { connectSocket, joinAuction, onNewBid, offNewBid, onAuctionEnded, offAuctionEnded } from '../lib/socket'
+import toast from 'react-hot-toast'
 
 export default function AuctionDetail() {
 	const { id } = useParams()
@@ -34,11 +35,21 @@ export default function AuctionDetail() {
 		}
 	}, [id])
 
-	const place = async () => {
-		if (!id) return
-		await axios.post(`/auctions/${id}/bid`, { amount })
-		await load()
-	}
+  const place = async () => {
+    if (!id || !auction) return
+    const prev = { ...auction }
+    // optimistic update
+    setAuction({ ...auction, currentBid: amount })
+    try {
+      await axios.post(`/auctions/${id}/bid`, { amount })
+      toast.success('Bid placed')
+      await load()
+    } catch (e: any) {
+      // rollback
+      setAuction(prev)
+      toast.error(e.response?.data?.error || 'Failed to place bid')
+    }
+  }
 
 	if (!auction) return <div className="p-6">Loading...</div>
 

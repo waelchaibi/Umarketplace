@@ -2,11 +2,24 @@ import { useQuery } from '@tanstack/react-query'
 import axios from '../config/axios'
 import { IMG_URL } from '../config'
 import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function Home() {
-	const { data, isLoading, isError } = useQuery({
-		queryKey: ['products'],
-		queryFn: async () => (await axios.get('/products')).data.data
+	const [category, setCategory] = useState<string>('')
+	const [condition, setCondition] = useState<string>('')
+	const [minPrice, setMinPrice] = useState<string>('')
+	const [maxPrice, setMaxPrice] = useState<string>('')
+	const [sort, setSort] = useState<string>('createdAt')
+	const [order, setOrder] = useState<string>('DESC')
+	const [page, setPage] = useState<number>(1)
+	const [limit, setLimit] = useState<number>(12)
+
+	const queryParams = useMemo(() => ({ category: category || undefined, condition: condition || undefined, minPrice: minPrice || undefined, maxPrice: maxPrice || undefined, sort, order, page, limit }), [category, condition, minPrice, maxPrice, sort, order, page, limit])
+
+	const { data, isLoading, isError, refetch, isFetching } = useQuery({
+		queryKey: ['products', queryParams],
+		queryFn: async () => (await axios.get('/products', { params: queryParams })).data.data,
+		keepPreviousData: true
 	})
 
 	const auctionsQuery = useQuery({
@@ -19,8 +32,9 @@ export default function Home() {
 		queryFn: async () => (await axios.get('/products/categories')).data.data
 	})
 
-	if (isLoading) return <div>Loading...</div>
-	if (isError) return <div>Error loading products.</div>
+	useEffect(() => { setPage(1) }, [category, condition, minPrice, maxPrice, sort, order, limit])
+
+	if (isError) return <div className="p-6">Error loading products.</div>
 
 	const items = (data?.items || []) as any[]
 
@@ -60,16 +74,71 @@ export default function Home() {
 				<h2 className="text-2xl font-display font-semibold mb-4">Browse by Category</h2>
 				<ul className="flex flex-wrap gap-2">
 					{(categoriesQuery.data || []).map((cat: string) => (
-						<li key={cat} className="px-4 py-2 rounded-full bg-gray-100 dark:bg-white/10 text-sm">{cat}</li>
+						<li key={cat}><button className={`px-4 py-2 rounded-full text-sm ${category === cat ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-white/10'}`} onClick={() => setCategory(category === cat ? '' : cat)}>{cat}</button></li>
 					))}
 				</ul>
+			</section>
+
+			{/* Filters */}
+			<section className="max-w-6xl mx-auto mb-6">
+				<div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
+					<div>
+						<label className="block text-xs mb-1">Condition</label>
+						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={condition} onChange={e => setCondition(e.target.value)}>
+							<option value="">Any</option>
+							<option value="mint">mint</option>
+							<option value="excellent">excellent</option>
+							<option value="good">good</option>
+							<option value="fair">fair</option>
+						</select>
+					</div>
+					<div>
+						<label className="block text-xs mb-1">Min Price</label>
+						<input className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
+					</div>
+					<div>
+						<label className="block text-xs mb-1">Max Price</label>
+						<input className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+					</div>
+					<div>
+						<label className="block text-xs mb-1">Sort</label>
+						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={sort} onChange={e => setSort(e.target.value)}>
+							<option value="createdAt">Newest</option>
+							<option value="currentPrice">Price</option>
+						</select>
+					</div>
+					<div>
+						<label className="block text-xs mb-1">Order</label>
+						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={order} onChange={e => setOrder(e.target.value)}>
+							<option value="DESC">Desc</option>
+							<option value="ASC">Asc</option>
+						</select>
+					</div>
+					<div>
+						<label className="block text-xs mb-1">Per Page</label>
+						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={limit} onChange={e => setLimit(Number(e.target.value))}>
+							<option value={12}>12</option>
+							<option value={24}>24</option>
+							<option value={48}>48</option>
+						</select>
+					</div>
+				</div>
 			</section>
 
 			{/* Featured products */}
 			<section id="featured" className="max-w-6xl mx-auto mb-10">
 				<h2 className="text-2xl font-display font-semibold mb-4">Featured</h2>
 				<ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-					{items.map((p, i) => (
+					{(isLoading || isFetching) && Array.from({ length: limit }).map((_, i) => (
+						<li key={`s-${i}`} className="rounded-2xl overflow-hidden bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card animate-pulse">
+							<div className="aspect-[4/3] bg-gray-100 dark:bg-white/10" />
+							<div className="p-4 space-y-2">
+								<div className="h-4 bg-gray-100 dark:bg-white/10 rounded w-2/3" />
+								<div className="h-3 bg-gray-100 dark:bg白/10 rounded w-1/2" />
+							</div>
+						</li>
+					))}
+					{!isLoading && items.map((p, i) => (
 						<li key={p.id} className="group rounded-2xl overflow-hidden bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs animate-fadeInUp" style={{ animationDelay: `${i * 40}ms` }}>
 							{(() => { const img = (Array.isArray(p.images) && p.images[0]) ? (p.images[0].startsWith('/uploads') ? `${IMG_URL}${p.images[0]}` : p.images[0]) : null; return img ? (
 								<div className="aspect-[4/3] overflow-hidden">
@@ -84,6 +153,14 @@ export default function Home() {
 						</li>
 					))}
 				</ul>
+				{/* Pagination */}
+				{data?.pages > 1 && (
+					<div className="flex items-center justify-center gap-2 mt-6">
+						<button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10 disabled:opacity-50">Prev</button>
+						<div className="text-sm">Page {page} / {data.pages}</div>
+						<button disabled={page >= data.pages} onClick={() => setPage((p) => Math.min(data.pages, p + 1))} className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10 disabled:opacity-50">Next</button>
+					</div>
+				)}
 			</section>
 
 			{/* Live auctions */}

@@ -43,6 +43,13 @@ export function offMessage(handler: (payload: any) => void) {
 	socket?.off('message:received', handler)
 }
 
+export function onTradeOffer(handler: (payload: any) => void) {
+	socket?.on('trade:offer_received', handler)
+}
+export function offTradeOffer(handler: (payload: any) => void) {
+	socket?.off('trade:offer_received', handler)
+}
+
 export function disconnectSocket() {
 	if (socket) {
 		socket.disconnect()
