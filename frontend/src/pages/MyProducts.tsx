@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import axios from '../config/axios'
+import toast from 'react-hot-toast'
 
 export default function MyProducts() {
 	const [items, setItems] = useState<any[]>([])
 	const [price, setPrice] = useState<Record<number, number>>({})
+  const [startPrice, setStartPrice] = useState<Record<number, number>>({})
+  const [endTime, setEndTime] = useState<Record<number, string>>({})
 
 	const load = async () => {
 		const profile = await axios.get('/auth/profile')
@@ -15,12 +18,27 @@ export default function MyProducts() {
 
 	const sell = async (id: number, p?: number) => {
 		await axios.post('/marketplace/sell', { productId: id, price: p })
+		toast.success('Listed for sale')
 		await load()
 	}
 	const updatePrice = async (id: number, p: number) => {
 		await axios.put(`/marketplace/price/${id}`, { price: p })
+		toast.success('Price updated')
 		await load()
 	}
+  const startAuction = async (id: number) => {
+    try {
+      const sp = startPrice[id]
+      const et = endTime[id]
+      if (!sp || !et) { toast.error('Enter starting price and end time'); return }
+      const iso = new Date(et).toISOString()
+      await axios.post('/auctions/create', { productId: id, startingPrice: sp, endTime: iso })
+      toast.success('Auction created')
+      await load()
+    } catch (e: any) {
+      toast.error(e.response?.data?.error || 'Failed to create auction')
+    }
+  }
 
 	return (
 		<div className="p-6 max-w-5xl mx-auto">
@@ -38,6 +56,13 @@ export default function MyProducts() {
 								<button className="px-3 py-2 rounded bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20" onClick={() => sell(p.id, price[p.id])}>Sell</button>
 								<button className="px-3 py-2 rounded bg-gradient-to-r from-accent-purple to-accent-blue text-white" onClick={() => updatePrice(p.id, price[p.id])}>Update</button>
 							</div>
+						</div>
+
+						{/* Start Auction */}
+						<div className="mt-4 grid md:grid-cols-3 gap-2">
+							<input className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="number" placeholder="starting price" value={startPrice[p.id] || '' as any} onChange={e => setStartPrice({ ...startPrice, [p.id]: Number(e.target.value) })} />
+							<input className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="datetime-local" value={endTime[p.id] || ''} onChange={e => setEndTime({ ...endTime, [p.id]: e.target.value })} />
+							<button disabled={p.status !== 'available'} className={`px-3 py-2 rounded ${p.status === 'available' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-white/10 text-gray-500 cursor-not-allowed'}`} onClick={() => startAuction(p.id)}>Start auction</button>
 						</div>
 					</li>
 				))}
