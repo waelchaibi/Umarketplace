@@ -31,6 +31,9 @@ app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 app.use('/api', apiLimiter, routes);
 app.use('/api/users', userRoutes);
 
+// Health check for uptime monitors and load balancers
+app.get('/api/health', (req, res) => res.json({ ok: true }));
+
 app.use((req, res) => res.status(404).json({ success: false, error: 'Not Found' }));
 app.use(errorHandler);
 
