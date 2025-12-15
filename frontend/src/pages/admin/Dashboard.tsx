@@ -19,7 +19,12 @@ export default function Dashboard() {
 				<div className="rounded-2xl p-6 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs">
 					<h3 className="font-semibold mb-2">Stats</h3>
 					<p className="text-sm text-gray-600 dark:text-gray-300 mb-4">KPIs and recent activity.</p>
-					<a className="inline-block px-4 py-2 rounded bg-gray-100 dark:bg白/10 hover:bg-gray-200 dark:hover:bg-white/20" href="/admin/stats">View Stats</a>
+					<a className="inline-block px-4 py-2 rounded bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20" href="/admin/stats">View Stats</a>
+				</div>
+				<div className="rounded-2xl p-6 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs">
+					<h3 className="font-semibold mb-2">Défis</h3>
+					<p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Create and manage quiz challenges.</p>
+					<a className="inline-block px-4 py-2 rounded bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20" href="/admin/defis">Manage Défis</a>
 				</div>
 			</div>
 		</div>
