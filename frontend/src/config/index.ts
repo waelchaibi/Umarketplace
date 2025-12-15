@@ -1,7 +1,12 @@
 export const API_DEVELOPMENT_NO_PRODUCTION = 'http://localhost:5000/api';
-export const API_URL = import.meta.env.VITE_API_URL || API_DEVELOPMENT_NO_PRODUCTION;
-export const APP_URL = import.meta.env.VITE_APP_URL || 'http://localhost:5173';
-export const IMG_URL = import.meta.env.VITE_IMG_URL || 'http://localhost:5000';
+// Sanitize env URLs: if comma-separated, take the first; trim spaces
+const RAW_API_URL = (import.meta as any)?.env?.VITE_API_URL || API_DEVELOPMENT_NO_PRODUCTION;
+const RAW_APP_URL = (import.meta as any)?.env?.VITE_APP_URL || 'http://localhost:5173';
+const RAW_IMG_URL = (import.meta as any)?.env?.VITE_IMG_URL || 'http://localhost:5000';
+
+export const API_URL = String(RAW_API_URL).split(',')[0].trim();
+export const APP_URL = String(RAW_APP_URL).split(',')[0].trim();
+export const IMG_URL = String(RAW_IMG_URL).split(',')[0].trim();
 export const ROUTE_PREFIX = import.meta.env.VITE_ROUTE_PREFIX || 'admin';
 
 // Derive socket base by removing trailing /api
