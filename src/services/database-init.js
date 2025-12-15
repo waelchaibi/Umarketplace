@@ -1,10 +1,37 @@
 import sequelize from '../config/database.js';
-import { User, Product } from '../models/index.js';
+import { User, Product, Challenge, ChallengeAnswer } from '../models/index.js';
 import bcrypt from 'bcrypt';
 
 export async function initDatabase({ seedDemo = true } = {}) {
   // Enable alter to evolve schema for new fields (isSuspended, isHidden, activity_logs)
   await sequelize.sync({ alter: true });
+
+  // Ensure new Défis columns exist even if sync alter didn't catch them (cross-machine DBs)
+  try {
+    // Challenges table columns
+    const [typeCol] = await sequelize.query("SHOW COLUMNS FROM `challenges` LIKE 'type'");
+    if (!Array.isArray(typeCol) || typeCol.length === 0) {
+      await sequelize.query(`
+        ALTER TABLE \`challenges\`
+        ADD COLUMN \`type\` ENUM('text','qcm') NOT NULL DEFAULT 'text' AFTER \`id\`,
+        ADD COLUMN \`options\` JSON NULL AFTER \`question\`,
+        ADD COLUMN \`correctOptionIndex\` INT UNSIGNED NULL AFTER \`options\`,
+        ADD COLUMN \`imageUrl\` VARCHAR(255) NULL AFTER \`correctAnswer\`
+      `);
+    }
+    // Challenge answers column for QCM
+    const [selIdxCol] = await sequelize.query("SHOW COLUMNS FROM `challenge_answers` LIKE 'selectedOptionIndex'");
+    if (!Array.isArray(selIdxCol) || selIdxCol.length === 0) {
+      await sequelize.query(`
+        ALTER TABLE \`challenge_answers\`
+        ADD COLUMN \`selectedOptionIndex\` INT UNSIGNED NULL AFTER \`userId\`
+      `);
+    }
+  } catch (e) {
+    // Non-fatal; log and continue
+    // eslint-disable-next-line no-console
+    console.error('[DB Init] Defis schema ensure error:', e?.message || e);
+  }
 
   if (seedDemo) {
     const adminCount = await User.count({ where: { role: 'admin' } });
