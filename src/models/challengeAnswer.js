@@ -9,6 +9,11 @@ export default function defineChallengeAnswer(sequelize, DataTypes) {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true
     },
+    selectedOptionIndex: {
+      // For QCM submissions
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true
+    },
     ipAddress: {
       type: DataTypes.STRING(45),
       allowNull: true

@@ -23,8 +23,8 @@ router.get('/stats', AdminController.adminStats);
 router.get('/logs', AdminController.adminLogs);
 
 // Admin Défis routes
-router.post('/defis', DefiController.adminCreate);
-router.put('/defis/:id', DefiController.adminUpdate);
+router.post('/defis', upload.single('image'), DefiController.adminCreate);
+router.put('/defis/:id', upload.single('image'), DefiController.adminUpdate);
 router.post('/defis/:id/close', DefiController.adminClose);
 router.get('/defis', DefiController.adminList);
 router.get('/defis/:id/answers', DefiController.adminAnswers);

@@ -15,7 +15,16 @@ type Challenge = {
 export default function AdminDefis() {
 	const [loading, setLoading] = useState(false)
 	const [items, setItems] = useState<Challenge[]>([])
-	const [form, setForm] = useState({ title: '', question: '', correctAnswer: '', prizeDescription: '' })
+	const [form, setForm] = useState<{ type: 'text' | 'qcm'; title: string; question: string; correctAnswer: string; prizeDescription: string; options: string[]; correctOptionIndex: number | null; image: File | null }>({
+		type: 'text',
+		title: '',
+		question: '',
+		correctAnswer: '',
+		prizeDescription: '',
+		options: ['', '', '', ''],
+		correctOptionIndex: null,
+		image: null
+	})
 	const [submitting, setSubmitting] = useState(false)
 	const [page, setPage] = useState(1)
 	const [limit] = useState(20)
@@ -38,11 +47,30 @@ export default function AdminDefis() {
 	useEffect(() => { load() }, [page])
 
 	const createChallenge = async () => {
-		if (!form.title.trim() || !form.question.trim() || !form.correctAnswer.trim()) return
+		if (!form.title.trim() || !form.question.trim()) return
+		if (form.type === 'text' && !form.correctAnswer.trim()) return
+		if (form.type === 'qcm') {
+			const filled = form.options.map(o => o.trim()).filter(Boolean)
+			if (filled.length < 2) { alert('QCM: au moins 2 options'); return }
+			if (form.correctOptionIndex === null || form.correctOptionIndex < 0 || form.correctOptionIndex >= form.options.length) { alert('QCM: choisir la bonne réponse'); return }
+		}
 		setSubmitting(true)
 		try {
-			await axios.post('/admin/defis', form)
-			setForm({ title: '', question: '', correctAnswer: '', prizeDescription: '' })
+			const fd = new FormData()
+			fd.append('type', form.type)
+			fd.append('title', form.title)
+			fd.append('question', form.question)
+			fd.append('prizeDescription', form.prizeDescription)
+			if (form.type === 'text') {
+				fd.append('correctAnswer', form.correctAnswer)
+			} else {
+				const options = form.options.map(o => o.trim()).filter(Boolean)
+				fd.append('options', JSON.stringify(options))
+				if (form.correctOptionIndex !== null) fd.append('correctOptionIndex', String(form.correctOptionIndex))
+			}
+			if (form.image) fd.append('image', form.image)
+			await axios.post('/admin/defis', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+			setForm({ type: 'text', title: '', question: '', correctAnswer: '', prizeDescription: '', options: ['', '', '', ''], correctOptionIndex: null, image: null })
 			await load()
 		} finally {
 			setSubmitting(false)
@@ -78,6 +106,19 @@ export default function AdminDefis() {
 			<div className="rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 p-4 mb-6">
 				<h2 className="text-lg font-medium mb-3">Créer un nouveau défi</h2>
 				<div className="grid gap-3">
+					<div className="grid grid-cols-2 gap-3">
+						<div>
+							<label className="block text-sm mb-1">Type</label>
+							<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as any }))}>
+								<option value="text">Texte</option>
+								<option value="qcm">QCM</option>
+							</select>
+						</div>
+						<div>
+							<label className="block text-sm mb-1">Image (optionnel)</label>
+							<input type="file" accept="image/*" onChange={(e) => setForm(f => ({ ...f, image: e.target.files?.[0] || null }))} />
+						</div>
+					</div>
 					<div>
 						<label htmlFor="title" className="block text-sm mb-1">Titre</label>
 						<input id="title" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
@@ -86,10 +127,41 @@ export default function AdminDefis() {
 						<label htmlFor="question" className="block text-sm mb-1">Question</label>
 						<textarea id="question" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" rows={3} value={form.question} onChange={e => setForm({ ...form, question: e.target.value })} />
 					</div>
-					<div>
-						<label htmlFor="correctAnswer" className="block text-sm mb-1">Bonne réponse (texte exact)</label>
-						<input id="correctAnswer" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.correctAnswer} onChange={e => setForm({ ...form, correctAnswer: e.target.value })} />
-					</div>
+					{form.type === 'text' ? (
+						<div>
+							<label htmlFor="correctAnswer" className="block text-sm mb-1">Bonne réponse (texte exact)</label>
+							<input id="correctAnswer" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.correctAnswer} onChange={e => setForm({ ...form, correctAnswer: e.target.value })} />
+						</div>
+					) : (
+						<div className="grid gap-2">
+							<label className="block text-sm">Options (QCM)</label>
+							{form.options.map((opt, idx) => (
+								<div key={idx} className="flex items-center gap-2">
+									<input
+										type="radio"
+										name="correct"
+										checked={form.correctOptionIndex === idx}
+										onChange={() => setForm(f => ({ ...f, correctOptionIndex: idx }))}
+										title="Bonne réponse"
+									/>
+									<input
+										className="flex-1 px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5"
+										placeholder={`Option ${idx + 1}`}
+										value={opt}
+										onChange={(e) => {
+											const next = [...form.options]
+											next[idx] = e.target.value
+											setForm(f => ({ ...f, options: next }))
+										}}
+									/>
+								</div>
+							))}
+							<div className="flex gap-2">
+								<button type="button" className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10" onClick={() => setForm(f => ({ ...f, options: [...f.options, ''] }))}>Ajouter</button>
+								<button type="button" className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10" onClick={() => setForm(f => ({ ...f, options: f.options.length > 2 ? f.options.slice(0, -1) : f.options }))}>Retirer</button>
+							</div>
+						</div>
+					)}
 					<div>
 						<label htmlFor="prize" className="block text-sm mb-1">Description du prix (optionnel)</label>
 						<input id="prize" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.prizeDescription} onChange={e => setForm({ ...form, prizeDescription: e.target.value })} />

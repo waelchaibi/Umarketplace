@@ -22,6 +22,7 @@ export async function postAnswer(req, res, next) {
     const { isCorrect, isWinner, answerId, error } = await submitAnswer({
       challengeId: req.params.id,
       answerText: req.body?.answerText || '',
+      selectedOptionIndex: req.body?.selectedOptionIndex,
       userId,
       ipAddress: ip || null
     });
@@ -33,12 +34,21 @@ export async function postAnswer(req, res, next) {
 // Admin
 export async function adminCreate(req, res, next) {
   try {
+    let options = req.body.options;
+    if (typeof options === 'string') {
+      try { options = JSON.parse(options); } catch { options = []; }
+    }
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : (req.body.imageUrl || null);
     const data = await create({
+      type: req.body.type || 'text',
       title: req.body.title,
       question: req.body.question,
       correctAnswer: req.body.correctAnswer,
       prizeDescription: req.body.prizeDescription,
-      status: req.body.status || 'active'
+      status: req.body.status || 'active',
+      options,
+      correctOptionIndex: req.body.correctOptionIndex !== undefined ? Number(req.body.correctOptionIndex) : undefined,
+      imageUrl
     });
     res.json({ success: true, data });
   } catch (e) { next(e); }
@@ -46,7 +56,14 @@ export async function adminCreate(req, res, next) {
 
 export async function adminUpdate(req, res, next) {
   try {
+    let options = req.body.options;
+    if (typeof options === 'string') {
+      try { options = JSON.parse(options); } catch { options = undefined; }
+    }
     const changes = { ...req.body };
+    if (options !== undefined) changes.options = options;
+    if (changes.correctOptionIndex !== undefined) changes.correctOptionIndex = Number(changes.correctOptionIndex);
+    if (req.file) changes.imageUrl = `/uploads/${req.file.filename}`;
     const data = await update({ id: req.params.id, changes });
     if (!data) return res.status(404).json({ success: false, error: 'Not found' });
     res.json({ success: true, data });
