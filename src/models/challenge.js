@@ -1,5 +1,6 @@
 export default function defineChallenge(sequelize, DataTypes) {
   const Challenge = sequelize.define('Challenge', {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
     title: {
       type: DataTypes.STRING(200),
       allowNull: false
@@ -23,7 +24,7 @@ export default function defineChallenge(sequelize, DataTypes) {
       defaultValue: 'active'
     },
     winnerUserId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true
     },
     winnerAt: {
