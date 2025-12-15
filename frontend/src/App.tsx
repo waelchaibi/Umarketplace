@@ -22,6 +22,8 @@ import Auctions from './pages/Auctions'
 import AuctionDetail from './pages/AuctionDetail'
 import MyProducts from './pages/MyProducts'
 import Messages from './pages/Messages'
+import Defis from './pages/Defis'
+import AdminDefis from './pages/admin/Defis'
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem('token')
@@ -88,6 +90,7 @@ export default function App() {
         </div>
         <Link className="hover:text-blue-600" to="/">Home</Link>
         <Link className="hover:text-blue-600" to="/auctions">Auctions</Link>
+        <Link className="hover:text-blue-600" to="/defis">Défis</Link>
         {token && <Link className="hover:text-blue-600" to="/profile">Profile</Link>}
         {token && <Link className="hover:text-blue-600" to="/wallet">Wallet</Link>}
         {token && <Link className="hover:text-blue-600" to="/my-products">My Products</Link>}
@@ -110,12 +113,14 @@ export default function App() {
         <Route path="/wallet" element={<RequireAuth><Wallet /></RequireAuth>} />
         <Route path="/my-products" element={<RequireAuth><MyProducts /></RequireAuth>} />
         <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
+        <Route path="/defis" element={<Defis />} />
         <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/create" element={<RequireAdmin><CreateProduct /></RequireAdmin>} />
         <Route path="/admin/users" element={<RequireAdmin><AdminUsers /></RequireAdmin>} />
         <Route path="/admin/stats" element={<RequireAdmin><AdminStats /></RequireAdmin>} />
         <Route path="/admin/products/moderation" element={<RequireAdmin><AdminProductsModeration /></RequireAdmin>} />
+        <Route path="/admin/defis" element={<RequireAdmin><AdminDefis /></RequireAdmin>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

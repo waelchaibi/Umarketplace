@@ -9,6 +9,8 @@ import defineTransaction from './transaction.js';
 import defineMessage from './message.js';
 import defineTradeOffer from './tradeOffer.js';
 import defineActivityLog from './activityLog.js';
+import defineChallenge from './challenge.js';
+import defineChallengeAnswer from './challengeAnswer.js';
 
 const User = defineUser(sequelize, DataTypes);
 const Product = defineProduct(sequelize, DataTypes);
@@ -18,6 +20,8 @@ const Transaction = defineTransaction(sequelize, DataTypes);
 const Message = defineMessage(sequelize, DataTypes);
 const TradeOffer = defineTradeOffer(sequelize, DataTypes);
 const ActivityLog = defineActivityLog(sequelize, DataTypes);
+const Challenge = defineChallenge(sequelize, DataTypes);
+const ChallengeAnswer = defineChallengeAnswer(sequelize, DataTypes);
 
 // Associations
 User.hasMany(Product, { foreignKey: 'ownerId', as: 'ownedProducts' });
@@ -58,6 +62,12 @@ Product.hasMany(TradeOffer, { foreignKey: 'requestedProductId', as: 'offersRecei
 TradeOffer.belongsTo(Product, { foreignKey: 'offeredProductId', as: 'offeredProduct' });
 TradeOffer.belongsTo(Product, { foreignKey: 'requestedProductId', as: 'requestedProduct' });
 
+// Challenges
+Challenge.belongsTo(User, { foreignKey: 'winnerUserId', as: 'winner' });
+Challenge.hasMany(ChallengeAnswer, { foreignKey: 'challengeId', as: 'answers' });
+ChallengeAnswer.belongsTo(Challenge, { foreignKey: 'challengeId', as: 'challenge' });
+ChallengeAnswer.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
 export {
   sequelize,
   User,
@@ -67,5 +77,7 @@ export {
   Transaction,
   Message,
   TradeOffer,
-  ActivityLog
+  ActivityLog,
+  Challenge,
+  ChallengeAnswer
 };

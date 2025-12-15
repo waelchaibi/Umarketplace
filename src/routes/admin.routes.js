@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 import * as AdminController from '../controllers/admin.controller.js';
+import * as DefiController from '../controllers/defi.controller.js';
 
 const router = Router();
 
@@ -20,5 +21,12 @@ router.put('/users/:id/role', AdminController.changeUserRole);
 router.put('/users/:id/suspend', AdminController.toggleUserSuspension);
 router.get('/stats', AdminController.adminStats);
 router.get('/logs', AdminController.adminLogs);
+
+// Admin Défis routes
+router.post('/defis', DefiController.adminCreate);
+router.put('/defis/:id', DefiController.adminUpdate);
+router.post('/defis/:id/close', DefiController.adminClose);
+router.get('/defis', DefiController.adminList);
+router.get('/defis/:id/answers', DefiController.adminAnswers);
 
 export default router;
