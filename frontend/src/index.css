@@ -2,5 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
-body { @apply bg-gray-50 text-gray-900; }
+:root {
+  --rinato-bg: #0F172A; /* Midnight Blue */
+  --rinato-text: #F1F5F9; /* Slate Light */
+  --rinato-copper: #EA580C;
+  --rinato-copper-light: #FDBA74;
+  --rinato-deeprust: #9A3412;
+}
+
+/* Base - Rinato */
+body {
+  @apply bg-midnight text-slateLight;
+  background-color: var(--rinato-bg);
+  color: var(--rinato-text);
+}
+
+/* Premium glass card */
+.rinato-card {
+  @apply bg-white/5 border border-white/10 rounded-lg shadow-glass backdrop-blur-md;
+}
+
+/* Editorial headings */
+.rinato-h1 { @apply font-display text-4xl md:text-5xl font-bold; letter-spacing: 0.02em; }
+.rinato-h2 { @apply font-display text-3xl md:text-4xl font-bold; letter-spacing: 0.02em; }
+.rinato-h3 { @apply font-display text-2xl md:text-3xl font-bold; }
+.rinato-eyebrow { @apply uppercase tracking-[0.15em] text-rinato-copper; }
+
+/* CTA Button */
+.rinato-cta {
+  @apply inline-flex items-center justify-center uppercase tracking-[0.1em] font-bold text-white px-6 py-3;
+  @apply bg-[var(--rinato-copper)];
+  border-radius: 0;
+  transition: box-shadow .2s ease, transform .06s ease, filter .2s ease, background-color .2s ease;
+}
+.rinato-cta:hover { filter: brightness(0.95); box-shadow: 0 0 0 1px rgba(234,88,12,.3), 0 6px 16px rgba(234,88,12,.25); }
+.rinato-cta:focus-visible { outline: 2px solid var(--rinato-copper-light); outline-offset: 2px; }
+.rinato-cta:active { transform: translateY(1px); }
+
+/* Blueprint fine lines background (technical blueprint) */
+.rinato-blueprint {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px;
+}
+
+/* Subtle noise overlay */
+.rinato-noise::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/fi
+");
+  opacity: .04;
+}
+
+/* Product card (museum/editorial) */
+.rinato-product {
+  @apply rinato-card overflow-hidden;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.rinato-product img { @apply w-full object-cover; }
+.rinato-product .title { @apply font-display text-xl; }
+.rinato-product .price { @apply font-sans font-bold text-white; }
+.rinato-product:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.35); border-color: rgba(253,186,116,.25); transform: translateY(-2px); }
+
+/* Card hover micro-interaction */
+.rinato-card { transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.rinato-card:hover { border-color: rgba(253,186,116,.2); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+
+/* Inputs standardization inside Rinato cards */
+.rinato-card input:not([type='checkbox']):not([type='radio']),
+.rinato-card select,
+.rinato-card textarea {
+  @apply border border-white/10 bg-white/5 text-slateLight placeholder-white/50;
+  transition: box-shadow .2s ease, border-color .2s ease, background-color .2s ease;
+}
+.rinato-card input:not([type='checkbox']):not([type='radio']):focus,
+.rinato-card select:focus,
+.rinato-card textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(253,186,116,.35);
+  border-color: rgba(234,88,12,.6);
+}
+
+/* Editorial divider */
+.rinato-divider { height: 1px; width: 100%; background-image: linear-gradient(135deg, #FDBA74 0%, #EA580C 50%, #9A3412 100%); opacity: .9; }
+
+/* Links */
+.rinato-link { color: var(--rinato-copper); position: relative; }
+.rinato-link::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px;
+  background: linear-gradient(135deg, #FDBA74, #EA580C);
+  transform: scaleX(0); transform-origin: left; transition: transform .2s ease;
+}
+.rinato-link:hover::after { transform: scaleX(1); }
+

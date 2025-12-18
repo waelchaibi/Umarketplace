@@ -8,26 +8,27 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['Montserrat', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         display: ['Playfair Display', 'serif']
       },
       colors: {
-        night: {
-          900: '#0F0F23',
-          800: '#1A1A2E'
+        midnight: '#0F172A', // Midnight Blue
+        rinato: {
+          copper: '#EA580C',
+          copperLight: '#FDBA74',
+          deepRust: '#9A3412'
         },
-        accent: {
-          blue: '#00D4FF',
-          purple: '#9D4EDD',
-          gold: '#FFD700'
-        }
+        slateLight: '#F1F5F9'
       },
       backdropBlur: {
         xs: '2px'
       },
       boxShadow: {
-        glass: '0 10px 30px rgba(0,0,0,0.25)',
+        glass: '0 10px 30px rgba(0,0,0,0.35)',
         card: '0 8px 24px rgba(0,0,0,0.12)'
+      },
+      backgroundImage: {
+        'rinato-metal': 'linear-gradient(135deg, #FDBA74 0%, #EA580C 50%, #9A3412 100%)'
       },
       keyframes: {
         fadeInUp: {

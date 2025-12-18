@@ -17,30 +17,30 @@ export default function Stats() {
 		load()
 	}, [])
 
-	if (loading) return <div className="p-6">Loading...</div>
+	if (loading) return <div className="p-6">Chargement...</div>
 
 	return (
 		<div className="p-6 max-w-6xl mx-auto">
-			<h1 className="text-3xl font-display font-semibold mb-6">Stats</h1>
+			<h1 className="rinato-h2 mb-6">Statistiques</h1>
 			<div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 				{[
-					{ label: 'Users', value: stats?.users },
-					{ label: 'Products', value: stats?.products },
-					{ label: 'Active Auctions', value: stats?.activeAuctions },
-					{ label: 'Sales (30d)', value: stats?.sales30d }
+					{ label: 'Utilisateurs', value: stats?.users },
+					{ label: 'Produits', value: stats?.products },
+					{ label: 'Enchères actives', value: stats?.activeAuctions },
+					{ label: 'Ventes (30j)', value: stats?.sales30d }
 				].map((k) => (
-					<div key={k.label} className="rounded-2xl p-5 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card">
-						<div className="text-sm text-gray-600 dark:text-gray-300">{k.label}</div>
+					<div key={k.label} className="rinato-card p-5">
+						<div className="text-sm text-slateLight/80">{k.label}</div>
 						<div className="text-3xl font-bold">{k.value ?? '-'}</div>
 					</div>
 				))}
 			</div>
-			<div className="rounded-2xl p-5 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card">
-				<h2 className="text-xl font-semibold mb-3">Recent activity</h2>
+			<div className="rinato-card p-5">
+				<h2 className="rinato-h3 mb-3">Activité récente</h2>
 				<ul className="space-y-2 max-h-96 overflow-auto pr-2 text-sm">
 					{logs.map((log) => (
-						<li key={log.id} className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-2">
-							<span className="text-gray-600 dark:text-gray-300">{log.action} {log.targetType}#{log.targetId}</span>
+						<li key={log.id} className="flex items-center justify-between border-b border-white/10 pb-2">
+							<span className="text-slateLight/80">{log.action} {log.targetType}#{log.targetId}</span>
 							<span>{new Date(log.createdAt).toLocaleString()}</span>
 						</li>
 					))}

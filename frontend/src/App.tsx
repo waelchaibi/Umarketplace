@@ -71,35 +71,35 @@ export default function App() {
   }, [q])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-night-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen rinato-blueprint rinato-noise">
       <Toaster position="top-right" toastOptions={{ className: 'text-sm' }} />
-      <nav className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-white/10 bg-white/70 dark:bg-night-800/60 sticky top-0 z-10 backdrop-blur-md shadow-glass">
-        <Link className="font-semibold" to="/">Unique Market</Link>
+      <nav className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-white/10 bg-midnight/80 sticky top-0 z-10 backdrop-blur-md shadow-glass">
+        <Link className="font-display tracking-[0.15em] text-slateLight" to="/">RINATO</Link>
         <div className="flex-1" />
         <div className="relative hidden md:block">
-          <input value={q} onChange={e => { setQ(e.target.value); setOpenSuggest(true) }} onKeyDown={(e)=>{ if(e.key==='Enter'){ navigate(`/search?q=${encodeURIComponent(q)}`); setOpenSuggest(false) } }} onBlur={() => setTimeout(()=>setOpenSuggest(false),150)} onFocus={() => setOpenSuggest(true)} placeholder="Search products" className="w-72 px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 focus:outline-none focus:ring-2 focus:ring-accent-blue/50" />
+          <input value={q} onChange={e => { setQ(e.target.value); setOpenSuggest(true) }} onKeyDown={(e)=>{ if(e.key==='Enter'){ navigate(`/search?q=${encodeURIComponent(q)}`); setOpenSuggest(false) } }} onBlur={() => setTimeout(()=>setOpenSuggest(false),150)} onFocus={() => setOpenSuggest(true)} placeholder="Rechercher" className="w-72 px-3 py-2 rounded border border-white/10 bg-white/5 text-slateLight placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-rinato-copper" />
           {openSuggest && suggestions.length > 0 && (
-            <div className="absolute mt-1 w-full rounded-lg bg-white dark:bg-night-800/90 border border-black/5 dark:border-white/10 shadow-lg overflow-hidden">
+            <div className="absolute mt-1 w-full rounded-lg bg-midnight/95 border border-white/10 shadow-lg overflow-hidden">
               {suggestions.map((s) => (
-                <Link key={s.id} to={`/products/${s.id}`} className="block px-3 py-2 hover:bg-gray-50 dark:hover:bg-white/10" onMouseDown={(e)=>e.preventDefault()}>
+                <Link key={s.id} to={`/products/${s.id}`} className="block px-3 py-2 text-slateLight hover:bg-white/5" onMouseDown={(e)=>e.preventDefault()}>
                   {s.title}
                 </Link>
               ))}
             </div>
           )}
         </div>
-        <Link className="hover:text-blue-600" to="/">Home</Link>
-        <Link className="hover:text-blue-600" to="/auctions">Auctions</Link>
-        <Link className="hover:text-blue-600" to="/defis">Défis</Link>
-        {token && <Link className="hover:text-blue-600" to="/profile">Profile</Link>}
-        {token && <Link className="hover:text-blue-600" to="/wallet">Wallet</Link>}
-        {token && <Link className="hover:text-blue-600" to="/my-products">My Products</Link>}
-        {token && <Link className="hover:text-blue-600" to="/messages">Messages</Link>}
-        {!token && <Link className="hover:text-blue-600" to="/login">Login</Link>}
-        {!token && <Link className="hover:text-blue-600" to="/register">Register</Link>}
-        {isAdmin && <Link className="hover:text-blue-600" to="/admin">Admin</Link>}
-        <button className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? 'Light' : 'Dark'}</button>
-        {token && <button className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20" onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); localStorage.removeItem('userId'); localStorage.removeItem('username'); window.location.href = '/' }}>Logout</button>}
+        <Link className="text-slateLight hover:text-rinato-copper" to="/">Accueil</Link>
+        <Link className="text-slateLight hover:text-rinato-copper" to="/auctions">Enchères</Link>
+        <Link className="text-slateLight hover:text-rinato-copper" to="/defis">Défis</Link>
+        {token && <Link className="text-slateLight hover:text-rinato-copper" to="/profile">Profil</Link>}
+        {token && <Link className="text-slateLight hover:text-rinato-copper" to="/wallet">Portefeuille</Link>}
+        {token && <Link className="text-slateLight hover:text-rinato-copper" to="/my-products">Mes pièces</Link>}
+        {token && <Link className="text-slateLight hover:text-rinato-copper" to="/messages">Messages</Link>}
+        {!token && <Link className="text-slateLight hover:text-rinato-copper" to="/login">Login</Link>}
+        {!token && <Link className="text-slateLight hover:text-rinato-copper" to="/register">Register</Link>}
+        {isAdmin && <Link className="text-slateLight hover:text-rinato-copper" to="/admin">Admin</Link>}
+        <button className="rinato-cta px-3 py-2" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? 'Light' : 'Dark'}</button>
+        {token && <button className="rinato-cta px-3 py-2" onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); localStorage.removeItem('userId'); localStorage.removeItem('username'); window.location.href = '/' }}>Logout</button>}
       </nav>
       <Routes>
         <Route path="/" element={<Home />} />

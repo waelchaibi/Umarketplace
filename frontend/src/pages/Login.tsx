@@ -29,19 +29,19 @@ export default function Login() {
 	}
 
 	return (
-		<div className="max-w-sm mx-auto p-6 mt-10 bg-white dark:bg-white text-gray-900 rounded-lg shadow">
-			<h1 className="text-xl font-semibold mb-4">Login</h1>
-			<form onSubmit={submit} className="space-y-3">
+		<div className="max-w-sm mx-auto p-6 mt-16 rinato-card">
+			<h1 className="rinato-h2 mb-4">Connexion</h1>
+			<form onSubmit={submit} className="space-y-4">
 				<div className="space-y-1">
-					<label className="text-sm">Email</label>
-					<input className="w-full border border-black/10 dark:border-black/10 rounded px-3 py-2 bg-white dark:bg-white" value={email} onChange={e => setEmail(e.target.value)} type="email" required />
+					<label className="text-sm text-slateLight/80">Email</label>
+					<input className="w-full border border-white/10 rounded px-3 py-2 bg-white/5 text-slateLight placeholder-white/50" value={email} onChange={e => setEmail(e.target.value)} type="email" required />
 				</div>
 				<div className="space-y-1">
-					<label className="text-sm">Password</label>
-					<input className="w-full border border-black/10 dark:border-black/10 rounded px-3 py-2 bg-white dark:bg-white" value={password} onChange={e => setPassword(e.target.value)} type="password" required />
+					<label className="text-sm text-slateLight/80">Mot de passe</label>
+					<input className="w-full border border-white/10 rounded px-3 py-2 bg-white/5 text-slateLight placeholder-white/50" value={password} onChange={e => setPassword(e.target.value)} type="password" required />
 				</div>
-				{error && <div className="text-red-600 text-sm">{error}</div>}
-				<button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded px-3 py-2" type="submit">Login</button>
+				{error && <div className="text-red-400 text-sm">{error}</div>}
+				<button className="w-full rinato-cta" type="submit">Se connecter</button>
 			</form>
 		</div>
 	)

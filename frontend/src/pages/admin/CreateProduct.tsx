@@ -26,25 +26,25 @@ export default function CreateProduct() {
 
 	return (
 		<div className="p-6 max-w-3xl mx-auto">
-			<h1 className="text-3xl font-display font-semibold mb-6">Create Product</h1>
-			<form onSubmit={submit} className="space-y-4 rounded-2xl p-6 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs">
+			<h1 className="rinato-h2 mb-6">Créer une pièce</h1>
+			<form onSubmit={submit} className="space-y-4 rinato-card p-6">
 				<div className="grid md:grid-cols-2 gap-4">
-					<input className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" placeholder="Title" value={title} onChange={e => setTitle(e.target.value)} required />
-					<input className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" placeholder="Category" value={category} onChange={e => setCategory(e.target.value)} />
-					<input className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="number" placeholder="Original Price" value={originalPrice as any} onChange={e => setOriginalPrice(Number(e.target.value))} />
-					<input className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="number" placeholder="Current Price" value={currentPrice as any} onChange={e => setCurrentPrice(Number(e.target.value))} />
+					<input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" placeholder="Titre" value={title} onChange={e => setTitle(e.target.value)} required />
+					<input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" placeholder="Catégorie" value={category} onChange={e => setCategory(e.target.value)} />
+					<input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" type="number" placeholder="Prix d’origine" value={originalPrice as any} onChange={e => setOriginalPrice(Number(e.target.value))} />
+					<input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" type="number" placeholder="Prix actuel" value={currentPrice as any} onChange={e => setCurrentPrice(Number(e.target.value))} />
 				</div>
-				<textarea className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
+				<textarea className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" placeholder="Description" value={description} onChange={e => setDescription(e.target.value)} />
 				<div className="grid md:grid-cols-2 gap-4 items-center">
-					<select className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={condition} onChange={e => setCondition(e.target.value)}>
+					<select className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight" value={condition} onChange={e => setCondition(e.target.value)}>
 						<option value="mint">mint</option>
 						<option value="excellent">excellent</option>
 						<option value="good">good</option>
 						<option value="fair">fair</option>
 					</select>
-					<input className="px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="file" multiple accept="image/*" onChange={e => setFiles(e.target.files)} />
+					<input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight" type="file" multiple accept="image/*" onChange={e => setFiles(e.target.files)} />
 				</div>
-				<button type="submit" className="px-4 py-2 rounded bg-gradient-to-r from-accent-purple to-accent-blue text-white">Create</button>
+				<button type="submit" className="rinato-cta">Créer</button>
 			</form>
 		</div>
 	)

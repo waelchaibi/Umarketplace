@@ -22,23 +22,23 @@ export default function Wallet() {
 
 	return (
 		<div className="p-6 max-w-4xl mx-auto">
-			<h1 className="text-3xl font-display font-semibold mb-6">Wallet</h1>
+			<h1 className="rinato-h2 mb-6">Portefeuille</h1>
 			<div className="grid md:grid-cols-2 gap-6">
-				<div className="rounded-2xl bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 p-6 shadow-card backdrop-blur-xs">
-					<p className="text-sm text-gray-600 dark:text-gray-300">Current balance</p>
-					<p className="text-4xl font-bold mt-2">${balance.toFixed(2)}</p>
+				<div className="rinato-card p-6">
+					<p className="text-sm text-slateLight/80">Solde actuel</p>
+					<p className="text-4xl font-bold mt-2">€ {balance.toFixed(2)}</p>
 					<div className="mt-4 flex gap-2">
-						<input className="flex-1 px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 focus:outline-none focus:ring-2 focus:ring-accent-blue/50" type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} />
-						<button onClick={add} className="px-4 py-2 rounded bg-gradient-to-r from-accent-purple to-accent-blue text-white shadow hover:opacity-90 transition">Add funds</button>
+						<input className="flex-1 px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} />
+						<button onClick={add} className="rinato-cta px-4 py-2">Ajouter des fonds</button>
 					</div>
 				</div>
-				<div className="rounded-2xl bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 p-6 shadow-card backdrop-blur-xs">
-					<h2 className="text-xl font-semibold mb-4">Transactions</h2>
+				<div className="rinato-card p-6">
+					<h2 className="rinato-h3 mb-4">Transactions</h2>
 					<ul className="space-y-2 max-h-72 overflow-auto pr-2">
 						{txs.map(tx => (
 							<li key={tx.id} className="flex items-center justify-between text-sm">
-								<span className="text-gray-600 dark:text-gray-300">[{tx.type}] {tx.product?.title || tx.productId}</span>
-								<span className="font-medium">${Number(tx.amount).toFixed(2)}</span>
+								<span className="text-slateLight/80">[{tx.type}] {tx.product?.title || tx.productId}</span>
+								<span className="font-medium">€ {Number(tx.amount).toFixed(2)}</span>
 							</li>
 						))}
 					</ul>

@@ -53,39 +53,39 @@ export default function Messages() {
 
 	return (
 		<div className="p-6 grid gap-6 md:grid-cols-[260px_1fr]">
-			<div className="rounded-2xl p-4 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs">
-				<h3 className="font-semibold mb-3">Conversations</h3>
+			<div className="rinato-card p-4">
+				<h3 className="font-display text-lg mb-3">Conversations</h3>
         <div className="mb-2">
-          <input className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" placeholder="Find people by username or email" value={query} onChange={e=>setQuery(e.target.value)} />
+          <input className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" placeholder="Rechercher par nom ou email" value={query} onChange={e=>setQuery(e.target.value)} />
           {matches.length > 0 && (
-            <div className="mt-1 border border-black/5 dark:border-white/10 rounded divide-y max-h-60 overflow-auto">
+            <div className="mt-1 border border-white/10 rounded divide-y divide-white/10 max-h-60 overflow-auto bg-midnight">
               {matches.map(u => (
-                <button key={u.id} className="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-white/10" onClick={() => { setSelected(u); loadThread(u.id); setQuery(''); setMatches([]) }}>{u.username} <span className="text-xs text-gray-500">{u.email}</span></button>
+                <button key={u.id} className="w-full text-left px-3 py-2 hover:bg-white/5" onClick={() => { setSelected(u); loadThread(u.id); setQuery(''); setMatches([]) }}>{u.username} <span className="text-xs text-slateLight/60">{u.email}</span></button>
               ))}
             </div>
           )}
         </div>
 				<ul className="space-y-1">
 					{convos.map(u => (
-						<li key={u.id}><button className={`w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-white/10 ${selected?.id === u.id ? 'bg-gray-100 dark:bg-white/10' : ''}`} onClick={() => { setSelected(u); loadThread(u.id) }}>{u.username}</button></li>
+						<li key={u.id}><button className={`w-full text-left px-3 py-2 hover:bg-white/5 border border-transparent ${selected?.id === u.id ? 'border-rinato-copper bg-white/5' : ''}`} onClick={() => { setSelected(u); loadThread(u.id) }}>{u.username}</button></li>
 					))}
 				</ul>
 			</div>
-			<div className="rounded-2xl p-4 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs min-h-[320px]">
+			<div className="rinato-card p-4 min-h-[320px]">
 				{selected ? (
 					<div className="flex flex-col h-full">
-						<h3 className="font-semibold mb-3">Chat with {selected.username}</h3>
-						<div className="flex-1 border border-black/5 dark:border-white/10 rounded p-3 space-y-2 overflow-auto">
+						<h3 className="font-display text-lg mb-3">Discussion avec {selected.username}</h3>
+						<div className="flex-1 border border-white/10 rounded p-3 space-y-2 overflow-auto">
 							{thread.map(m => (
-								<div key={m.id} className={`max-w-[70%] px-3 py-2 rounded ${m.senderId === selected.id ? 'bg-gray-100 dark:bg-white/10' : 'bg-blue-600 text-white ml-auto'}`}>{m.senderId === selected.id ? selected.username : 'You'}: {m.content}</div>
+								<div key={m.id} className={`max-w-[70%] px-3 py-2 ${m.senderId === selected.id ? 'bg-white/5 border border-white/10' : 'rinato-cta ml-auto'}`}>{m.senderId === selected.id ? selected.username : 'Vous'}: {m.content}</div>
 							))}
 						</div>
 						<div className="mt-3 flex gap-2">
-							<input className="flex-1 px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 focus:outline-none focus:ring-2 focus:ring-accent-blue/50" value={text} onChange={e => setText(e.target.value)} />
-							<button className="px-4 py-2 rounded bg-gradient-to-r from-accent-purple to-accent-blue text-white" onClick={send}>Send</button>
+							<input className="flex-1 px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-rinato-copper" value={text} onChange={e => setText(e.target.value)} />
+							<button className="rinato-cta px-4 py-2" onClick={send}>Envoyer</button>
 						</div>
 					</div>
-				) : <div className="text-gray-600 dark:text-gray-300">Select a conversation</div>}
+				) : <div className="text-slateLight/80">Sélectionnez une conversation</div>}
 			</div>
 		</div>
 	)
