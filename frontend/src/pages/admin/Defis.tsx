@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import axios from '../../config/axios'
 
 type Challenge = {
@@ -72,14 +73,23 @@ export default function AdminDefis() {
 			await axios.post('/admin/defis', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
 			setForm({ type: 'text', title: '', question: '', correctAnswer: '', prizeDescription: '', options: ['', '', '', ''], correctOptionIndex: null, image: null })
 			await load()
+			toast.success('Défi créé')
+		} catch (e: any) {
+			const msg = e?.response?.data?.error || 'Échec de création du défi'
+			toast.error(msg)
 		} finally {
 			setSubmitting(false)
 		}
 	}
 
 	const closeChallenge = async (id: number) => {
-		await axios.post(`/admin/defis/${id}/close`)
-		await load()
+		try {
+			await axios.post(`/admin/defis/${id}/close`)
+			toast.success('Défi clôturé')
+			await load()
+		} catch (e: any) {
+			toast.error(e?.response?.data?.error || 'Échec de clôture')
+		}
 	}
 
 	const toggleAnswers = async (id: number) => {

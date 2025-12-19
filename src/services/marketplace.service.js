@@ -1,5 +1,22 @@
 import { sequelize, Product, User, Transaction } from '../models/index.js';
 
+export async function createByUser({ ownerId, title, description, category, originalPrice, currentPrice, condition = 'excellent', images = [] }) {
+  const user = await User.findByPk(ownerId);
+  if (!user) throw Object.assign(new Error('User not found'), { status: 404 });
+  const product = await Product.create({
+    title,
+    description,
+    category,
+    originalPrice,
+    currentPrice,
+    condition,
+    images,
+    ownerId,
+    originalOwnerId: ownerId,
+    status: 'available'
+  });
+  return product;
+}
 export async function buy(productId, buyerId) {
   return await sequelize.transaction(async (t) => {
     const product = await Product.findByPk(productId, { lock: t.LOCK.UPDATE, transaction: t });

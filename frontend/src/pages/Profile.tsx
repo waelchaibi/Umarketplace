@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import axios from '../config/axios'
 
 export default function Profile() {
@@ -22,8 +23,12 @@ export default function Profile() {
 	if (!profile) return <div className="p-6">Introuvable</div>
 
 	const save = async () => {
-		await axios.put('/auth/profile', { firstName, lastName })
-		alert('Saved')
+		try {
+			await axios.put('/auth/profile', { firstName, lastName })
+			toast.success('Profil enregistré')
+		} catch (e: any) {
+			toast.error(e?.response?.data?.error || 'Échec de sauvegarde')
+		}
 	}
 
 	return (

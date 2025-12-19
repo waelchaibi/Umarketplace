@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import axios from '../../config/axios'
 
 export default function CreateProduct() {
@@ -12,16 +13,20 @@ export default function CreateProduct() {
 
 	const submit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		const fd = new FormData()
-		fd.append('title', title)
-		fd.append('description', description)
-		fd.append('category', category)
-		if (originalPrice !== '') fd.append('originalPrice', String(originalPrice))
-		if (currentPrice !== '') fd.append('currentPrice', String(currentPrice))
-		fd.append('condition', condition)
-		if (files) Array.from(files).forEach(f => fd.append('images', f))
-		await axios.post('/admin/products', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-		alert('Created')
+		try {
+			const fd = new FormData()
+			fd.append('title', title)
+			fd.append('description', description)
+			fd.append('category', category)
+			if (originalPrice !== '') fd.append('originalPrice', String(originalPrice))
+			if (currentPrice !== '') fd.append('currentPrice', String(currentPrice))
+			fd.append('condition', condition)
+			if (files) Array.from(files).forEach(f => fd.append('images', f))
+			await axios.post('/admin/products', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+			toast.success('Produit créé')
+		} catch (e: any) {
+			toast.error(e?.response?.data?.error || 'Échec de création')
+		}
 	}
 
 	return (

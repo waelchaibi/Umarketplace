@@ -3,7 +3,24 @@ import { User, Product, Challenge, ChallengeAnswer } from '../models/index.js';
 import bcrypt from 'bcrypt';
 
 export async function initDatabase({ seedDemo = true } = {}) {
-  // Enable alter to evolve schema for new fields (isSuspended, isHidden, activity_logs)
+  // Pre-sync repair: if users table exists with too many/dangling indexes, drop non-primary indexes
+  try {
+    const [exists] = await sequelize.query("SHOW TABLES LIKE 'users'");
+    if (Array.isArray(exists) && exists.length > 0) {
+      const [idxRows] = await sequelize.query('SHOW INDEX FROM `users`');
+      const rows = Array.isArray(idxRows) ? idxRows : [];
+      for (const idx of rows) {
+        const keyName = String(idx.Key_name || '');
+        if (keyName && keyName !== 'PRIMARY') {
+          await sequelize.query(`ALTER TABLE \`users\` DROP INDEX \`${keyName}\``);
+        }
+      }
+    }
+  } catch (e) {
+    console.error('[DB Init] Users pre-sync index cleanup error:', e?.message || e);
+  }
+
+  // Enable alter to evolve schema for new fields (isSuspended, isHidden, activity_logs, défis)
   await sequelize.sync({ alter: true });
 
   // Ensure new Défis columns exist even if sync alter didn't catch them (cross-machine DBs)
@@ -31,6 +48,35 @@ export async function initDatabase({ seedDemo = true } = {}) {
     // Non-fatal; log and continue
     // eslint-disable-next-line no-console
     console.error('[DB Init] Defis schema ensure error:', e?.message || e);
+  }
+
+  // Repair users unique indexes to avoid ER_TOO_MANY_KEYS caused by repeated ALTER .. UNIQUE
+  try {
+    const [idxRows] = await sequelize.query('SHOW INDEX FROM `users`');
+    const uniqueEmailIdx = (Array.isArray(idxRows) ? idxRows : []).filter(r => String(r.Column_name).toLowerCase() === 'email' && Number(r.Non_unique) === 0);
+    const uniqueUserIdx = (Array.isArray(idxRows) ? idxRows : []).filter(r => String(r.Column_name).toLowerCase() === 'username' && Number(r.Non_unique) === 0);
+    // Drop all existing unique indexes for email except the desired one
+    for (const idx of uniqueEmailIdx) {
+      if (idx.Key_name !== 'ux_users_email') {
+        await sequelize.query(`ALTER TABLE \`users\` DROP INDEX \`${idx.Key_name}\``);
+      }
+    }
+    for (const idx of uniqueUserIdx) {
+      if (idx.Key_name !== 'ux_users_username') {
+        await sequelize.query(`ALTER TABLE \`users\` DROP INDEX \`${idx.Key_name}\``);
+      }
+    }
+    // Create named unique indexes if missing
+    const hasEmail = (await sequelize.query("SHOW INDEX FROM `users` WHERE Key_name = 'ux_users_email'"))[0];
+    if (!Array.isArray(hasEmail) || hasEmail.length === 0) {
+      await sequelize.query('ALTER TABLE `users` ADD UNIQUE INDEX `ux_users_email` (`email`)');
+    }
+    const hasUsername = (await sequelize.query("SHOW INDEX FROM `users` WHERE Key_name = 'ux_users_username'"))[0];
+    if (!Array.isArray(hasUsername) || hasUsername.length === 0) {
+      await sequelize.query('ALTER TABLE `users` ADD UNIQUE INDEX `ux_users_username` (`username`)');
+    }
+  } catch (e) {
+    console.error('[DB Init] Users unique index repair error:', e?.message || e);
   }
 
   if (seedDemo) {

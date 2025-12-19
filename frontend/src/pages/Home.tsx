@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import axios from '../config/axios'
 import { IMG_URL } from '../config'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 
 export default function Home() {
+	const navigate = useNavigate()
 	const [category, setCategory] = useState<string>('')
 	const [condition, setCondition] = useState<string>('')
 	const [minPrice, setMinPrice] = useState<string>('')
@@ -65,21 +66,6 @@ export default function Home() {
 				</div>
 			</section>
 
-			{/* Selling points */}
-			<section className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-				{[
-					{ t: 'Patron', d: 'Chaque structure est pensée et maîtrisée.' },
-					{ t: 'Atelier', d: 'Savoir-faire technique et finitions couture.' },
-					{ t: 'Éditorial', d: 'Une vision mode, une écriture singulière.' },
-					{ t: 'Pièce unique', d: 'Rareté authentifiée et traçabilité.' }
-				].map((c) => (
-					<div key={c.t} className="rinato-card p-5">
-						<div className="font-display text-lg mb-1">{c.t}</div>
-						<div className="text-sm text-slateLight/80">{c.d}</div>
-					</div>
-				))}
-			</section>
-
 			{/* Categories */}
 			<section className="max-w-6xl mx-auto mb-10">
 				<h2 className="rinato-h2 mb-3">Catégories</h2>
@@ -90,13 +76,13 @@ export default function Home() {
 				</ul>
 			</section>
 
-			{/* Filters */}
-			<section className="max-w-6xl mx-auto mb-6">
-				<div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
+			{/* Filters - compact inline */}
+			<section className="max-w-6xl mx-auto mb-4">
+				<div className="grid grid-cols-2 md:grid-cols-6 gap-2">
 					<div>
-						<label className="block text-xs mb-1">Condition</label>
-						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={condition} onChange={e => setCondition(e.target.value)}>
-							<option value="">Any</option>
+						<label htmlFor="f-cond" className="sr-only">Condition</label>
+						<select id="f-cond" className="w-full h-9 px-2 text-sm border border-white/10 bg-white/5 text-slateLight" value={condition} onChange={e => setCondition(e.target.value)}>
+							<option value="">Condition</option>
 							<option value="mint">mint</option>
 							<option value="excellent">excellent</option>
 							<option value="good">good</option>
@@ -104,30 +90,30 @@ export default function Home() {
 						</select>
 					</div>
 					<div>
-						<label className="block text-xs mb-1">Min Price</label>
-						<input className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="number" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
+						<label htmlFor="f-min" className="sr-only">Min Price</label>
+						<input id="f-min" className="w-full h-9 px-2 text-sm border border-white/10 bg-white/5 text-slateLight placeholder-white/50" type="number" placeholder="Min" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
 					</div>
 					<div>
-						<label className="block text-xs mb-1">Max Price</label>
-						<input className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" type="number" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
+						<label htmlFor="f-max" className="sr-only">Max Price</label>
+						<input id="f-max" className="w-full h-9 px-2 text-sm border border-white/10 bg-white/5 text-slateLight placeholder-white/50" type="number" placeholder="Max" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
 					</div>
 					<div>
-						<label className="block text-xs mb-1">Sort</label>
-						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={sort} onChange={e => setSort(e.target.value)}>
+						<label htmlFor="f-sort" className="sr-only">Sort</label>
+						<select id="f-sort" className="w-full h-9 px-2 text-sm border border-white/10 bg-white/5 text-slateLight" value={sort} onChange={e => setSort(e.target.value)}>
 							<option value="createdAt">Newest</option>
 							<option value="currentPrice">Price</option>
 						</select>
 					</div>
 					<div>
-						<label className="block text-xs mb-1">Order</label>
-						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={order} onChange={e => setOrder(e.target.value)}>
+						<label htmlFor="f-order" className="sr-only">Order</label>
+						<select id="f-order" className="w-full h-9 px-2 text-sm border border-white/10 bg-white/5 text-slateLight" value={order} onChange={e => setOrder(e.target.value)}>
 							<option value="DESC">Desc</option>
 							<option value="ASC">Asc</option>
 						</select>
 					</div>
 					<div>
-						<label className="block text-xs mb-1">Per Page</label>
-						<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={limit} onChange={e => setLimit(Number(e.target.value))}>
+						<label htmlFor="f-limit" className="sr-only">Per Page</label>
+						<select id="f-limit" className="w-full h-9 px-2 text-sm border border-white/10 bg-white/5 text-slateLight" value={limit} onChange={e => setLimit(Number(e.target.value))}>
 							<option value={12}>12</option>
 							<option value={24}>24</option>
 							<option value={48}>48</option>
@@ -139,7 +125,7 @@ export default function Home() {
 			{/* Featured products */}
 			<section id="featured" className="max-w-6xl mx-auto mb-12">
 				<h2 className="rinato-h2 mb-4">Sélection</h2>
-				<ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+				<ul className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
 					{(isLoading || isFetching) && Array.from({ length: limit }).map((_, i) => (
 						<li key={`s-${i}`} className="rinato-card overflow-hidden animate-pulse">
 							<div className="aspect-[4/3] bg-white/5" />
@@ -150,16 +136,24 @@ export default function Home() {
 						</li>
 					))}
 					{!isLoading && items.map((p, i) => (
-						<li key={p.id} className="group rinato-product animate-fadeInUp" style={{ animationDelay: `${i * 40}ms` }}>
+						<li
+							key={p.id}
+							className="group rinato-product ultra animate-fadeInUp cursor-pointer"
+							style={{ animationDelay: `${i * 40}ms` }}
+							role="link"
+							tabIndex={0}
+							onClick={() => navigate(`/products/${p.id}`)}
+							onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate(`/products/${p.id}`) } }}
+						>
 							{(() => { const img = (Array.isArray(p.images) && p.images[0]) ? (p.images[0].startsWith('/uploads') ? `${IMG_URL}${p.images[0]}` : p.images[0]) : null; return img ? (
-								<div className="aspect-[4/3] overflow-hidden">
+								<div className="aspect-[4/5] overflow-hidden">
 									<img src={img} alt={p.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
 								</div>
-							) : <div className="aspect-[4/3] bg-white/10" /> })()}
-							<div className="p-4">
+							) : <div className="aspect-[4/5] bg-white/10" /> })()}
+							<div className="p-2">
 								<h3 className="title mb-1">{p.title}</h3>
-								<p className="price mb-3">€ {p.currentPrice ?? p.originalPrice ?? '-'}</p>
-								<Link className="rinato-cta" to={`/products/${p.id}`}>Voir</Link>
+								<p className="price mb-2">€ {p.currentPrice ?? p.originalPrice ?? '-'}</p>
+								<Link className="rinato-cta rinato-cta--sm" to={`/products/${p.id}`} onClick={(e)=>e.stopPropagation()}>Voir</Link>
 							</div>
 						</li>
 					))}
@@ -193,6 +187,21 @@ export default function Home() {
 						</li>
 					))}
 				</ul>
+			</section>
+
+			{/* Selling points (moved below grids to preserve product discoverability) */}
+			<section className="max-w-6xl mx-auto grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+				{[
+					{ t: 'Patron', d: 'Chaque structure est pensée et maîtrisée.' },
+					{ t: 'Atelier', d: 'Savoir-faire technique et finitions couture.' },
+					{ t: 'Éditorial', d: 'Une vision mode, une écriture singulière.' },
+					{ t: 'Pièce unique', d: 'Rareté authentifiée et traçabilité.' }
+				].map((c) => (
+					<div key={c.t} className="rinato-card p-5">
+						<div className="font-display text-lg mb-1">{c.t}</div>
+						<div className="text-sm text-slateLight/80">{c.d}</div>
+					</div>
+				))}
 			</section>
 
 			{/* CTA banner */}

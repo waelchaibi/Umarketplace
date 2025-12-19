@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react'
+import toast from 'react-hot-toast'
 import axios from '../config/axios'
 import { useNavigate } from 'react-router-dom'
 import { connectSocket } from '../lib/socket'
@@ -22,9 +23,12 @@ export default function Login() {
 			localStorage.setItem('username', String(res.data.data.user.username || ''))
 			setAuth({ token: res.data.data.token, role: res.data.data.user.role, userId: String(res.data.data.user.id), username: String(res.data.data.user.username || '') })
 			connectSocket(res.data.data.user.id)
+			toast.success('Bienvenue')
 			navigate('/')
 		} catch (err: any) {
-			setError(err.response?.data?.error || 'Login failed')
+			const msg = err.response?.data?.error || 'Login failed'
+			setError(msg)
+			toast.error(msg)
 		}
 	}
 

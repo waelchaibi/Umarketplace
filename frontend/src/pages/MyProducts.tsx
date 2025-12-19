@@ -7,6 +7,14 @@ export default function MyProducts() {
 	const [price, setPrice] = useState<Record<number, number>>({})
   const [startPrice, setStartPrice] = useState<Record<number, number>>({})
   const [endTime, setEndTime] = useState<Record<number, string>>({})
+  const [creating, setCreating] = useState(false)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('')
+  const [origPrice, setOrigPrice] = useState<number | ''>('')
+  const [currPrice, setCurrPrice] = useState<number | ''>('')
+  const [condition, setCondition] = useState('excellent')
+  const [files, setFiles] = useState<FileList | null>(null)
 
 	const load = async () => {
 		const profile = await axios.get('/auth/profile')
@@ -43,6 +51,55 @@ export default function MyProducts() {
 	return (
 		<div className="p-6 max-w-5xl mx-auto">
 			<h1 className="rinato-h2 mb-6">Mes pièces</h1>
+      {/* Create product */}
+      <div className="rinato-card p-5 mb-6">
+        <h2 className="rinato-h3 mb-3">Ajouter une pièce</h2>
+        <div className="grid md:grid-cols-2 gap-3">
+          <input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" placeholder="Titre" value={title} onChange={e=>setTitle(e.target.value)} />
+          <input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" placeholder="Catégorie" value={category} onChange={e=>setCategory(e.target.value)} />
+          <input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" type="number" placeholder="Prix d’origine" value={origPrice as any} onChange={e=>setOrigPrice(Number(e.target.value))} />
+          <input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" type="number" placeholder="Prix actuel" value={currPrice as any} onChange={e=>setCurrPrice(Number(e.target.value))} />
+        </div>
+        <textarea className="w-full mt-3 px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" rows={3} placeholder="Description" value={description} onChange={e=>setDescription(e.target.value)} />
+        <div className="grid md:grid-cols-2 gap-3 mt-3 items-center">
+          <select className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight" value={condition} onChange={e=>setCondition(e.target.value)}>
+            <option value="mint">mint</option>
+            <option value="excellent">excellent</option>
+            <option value="good">good</option>
+            <option value="fair">fair</option>
+          </select>
+          <input className="px-3 py-2 border border-white/10 bg-white/5 text-slateLight" type="file" multiple accept="image/*" onChange={e=>setFiles(e.target.files)} />
+        </div>
+        <div className="mt-3">
+          <button
+            className="rinato-cta"
+            disabled={creating}
+            onClick={async ()=>{
+              try {
+                setCreating(true)
+                const fd = new FormData()
+                fd.append('title', title)
+                fd.append('description', description)
+                fd.append('category', category)
+                if (origPrice!=='') fd.append('originalPrice', String(origPrice))
+                if (currPrice!=='') fd.append('currentPrice', String(currPrice))
+                fd.append('condition', condition)
+                if (files) Array.from(files).forEach(f=>fd.append('images', f))
+                await axios.post('/marketplace/create-product', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+                toast.success('Pièce ajoutée')
+                setTitle(''); setDescription(''); setCategory(''); setOrigPrice(''); setCurrPrice(''); setCondition('excellent'); setFiles(null)
+                await load()
+              } catch (e: any) {
+                toast.error(e?.response?.data?.error || 'Échec de création')
+              } finally {
+                setCreating(false)
+              }
+            }}
+          >
+            {creating ? 'Création...' : 'Ajouter'}
+          </button>
+        </div>
+      </div>
 			<ul className="space-y-4">
 				{items.map(p => (
 					<li key={p.id} className="rinato-card p-5">

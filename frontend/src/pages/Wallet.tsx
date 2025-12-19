@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import axios from '../config/axios'
 
 export default function Wallet() {
@@ -16,8 +17,13 @@ export default function Wallet() {
 	useEffect(() => { load() }, [])
 
 	const add = async () => {
-		await axios.post('/wallet/add-funds', { amount })
-		await load()
+		try {
+			await axios.post('/wallet/add-funds', { amount })
+			toast.success('Fonds ajoutés')
+			await load()
+		} catch (e: any) {
+			toast.error(e?.response?.data?.error || 'Échec de l’ajout de fonds')
+		}
 	}
 
 	return (

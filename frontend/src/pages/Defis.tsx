@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from '../config/axios'
 import { IMG_URL } from '../config'
+import toast from 'react-hot-toast'
 
 type Challenge = {
 	id: number
@@ -68,7 +69,7 @@ export default function Defis() {
 		} catch (e: any) {
 			const msg = e?.response?.data?.error || 'Erreur'
 			setResult(prev => ({ ...prev, [challengeId]: { isCorrect: false, isWinner: false } }))
-			alert(msg)
+			toast.error(msg)
 		} finally {
 			setSubmittingId(null)
 		}

@@ -8,6 +8,7 @@
   --rinato-copper: #EA580C;
   --rinato-copper-light: #FDBA74;
   --rinato-deeprust: #9A3412;
+  color-scheme: dark; /* Ensure native form controls (select dropdowns) render with dark-friendly contrast */
 }
 
 /* Base - Rinato */
@@ -15,6 +16,12 @@ body {
   @apply bg-midnight text-slateLight;
   background-color: var(--rinato-bg);
   color: var(--rinato-text);
+}
+
+/* Improve native dropdown readability across platforms */
+select option {
+  color: var(--rinato-text);
+  background-color: var(--rinato-bg);
 }
 
 /* Premium glass card */
@@ -39,6 +46,8 @@ body {
 .rinato-cta:focus-visible { outline: 2px solid var(--rinato-copper-light); outline-offset: 2px; }
 .rinato-cta:active { transform: translateY(1px); }
 
+.rinato-cta--sm { padding: .5rem 1rem; font-size: .8125rem; letter-spacing: .08em; }
+
 /* Blueprint fine lines background (technical blueprint) */
 .rinato-blueprint {
   background-image:
@@ -58,15 +67,22 @@ body {
   opacity: .04;
 }
 
-/* Product card (museum/editorial) */
+/* Product card (dense shop grid; no glass) */
 .rinato-product {
-  @apply rinato-card overflow-hidden;
-  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  @apply overflow-hidden rounded-lg bg-white/5 border border-white/10;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background-color .2s ease;
 }
 .rinato-product img { @apply w-full object-cover; }
 .rinato-product .title { @apply font-display text-xl; }
 .rinato-product .price { @apply font-sans font-bold text-white; }
-.rinato-product:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.35); border-color: rgba(253,186,116,.25); transform: translateY(-2px); }
+.rinato-product:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.3); border-color: rgba(253,186,116,.25); transform: translateY(-2px); }
+
+.rinato-product.compact .title { @apply text-lg; }
+.rinato-product.compact .price { @apply text-base; }
+
+/* Ultra compact variant for denser grids */
+.rinato-product.ultra .title { @apply text-base; }
+.rinato-product.ultra .price { @apply text-sm; }
 
 /* Card hover micro-interaction */
 .rinato-card { transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }

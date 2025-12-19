@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react'
+import toast from 'react-hot-toast'
 import axios from '../config/axios'
 import { useNavigate } from 'react-router-dom'
 import { connectSocket } from '../lib/socket'
@@ -23,9 +24,13 @@ export default function Register() {
 			localStorage.setItem('username', String(res.data.data.user.username || ''))
 			setAuth({ token: res.data.data.token, role: res.data.data.user.role, userId: String(res.data.data.user.id), username: String(res.data.data.user.username || '') })
 			connectSocket(res.data.data.user.id)
+			toast.success('Compte créé avec succès')
 			navigate('/')
 		} catch (err: any) {
-			setError(err.response?.data?.error || 'Registration failed')
+			const api = err?.response?.data
+			const validation = Array.isArray(api?.errors) ? api.errors.map((e: any) => e?.msg).filter(Boolean).join(' • ') : ''
+			setError(validation || api?.error || 'Registration failed')
+			toast.error(validation || api?.error || 'Inscription refusée')
 		}
 	}
 
@@ -43,7 +48,8 @@ export default function Register() {
 				</div>
 				<div className="space-y-1">
 					<label className="text-sm text-slateLight/80">Mot de passe</label>
-					<input className="w-full border border-white/10 rounded px-3 py-2 bg-white/5 text-slateLight placeholder-white/50" value={password} onChange={e => setPassword(e.target.value)} type="password" required />
+					<input className="w-full border border-white/10 rounded px-3 py-2 bg-white/5 text-slateLight placeholder-white/50" value={password} onChange={e => setPassword(e.target.value)} type="password" autoComplete="new-password" required />
+					<p className="text-xs text-slateLight/70 mt-1">Au moins 8 caractères, 1 majuscule et 1 chiffre.</p>
 				</div>
 				{error && <div className="text-red-400 text-sm">{error}</div>}
 				<button className="w-full rinato-cta" type="submit">Créer mon compte</button>
