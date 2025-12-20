@@ -24,6 +24,7 @@ import MyProducts from './pages/MyProducts'
 import Messages from './pages/Messages'
 import Defis from './pages/Defis'
 import AdminDefis from './pages/admin/Defis'
+import MyBids from './pages/MyBids'
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const token = localStorage.getItem('token')
@@ -94,6 +95,7 @@ export default function App() {
         {token && <Link className="text-slateLight hover:text-rinato-copper" to="/profile">Profil</Link>}
         {token && <Link className="text-slateLight hover:text-rinato-copper" to="/wallet">Portefeuille</Link>}
         {token && <Link className="text-slateLight hover:text-rinato-copper" to="/my-products">Mes pièces</Link>}
+        {token && <Link className="text-slateLight hover:text-rinato-copper" to="/my-bids">Mes enchères</Link>}
         {token && <Link className="text-slateLight hover:text-rinato-copper" to="/messages">Messages</Link>}
         {!token && <Link className="text-slateLight hover:text-rinato-copper" to="/login">Login</Link>}
         {!token && <Link className="text-slateLight hover:text-rinato-copper" to="/register">Register</Link>}
@@ -113,6 +115,7 @@ export default function App() {
         <Route path="/wallet" element={<RequireAuth><Wallet /></RequireAuth>} />
         <Route path="/my-products" element={<RequireAuth><MyProducts /></RequireAuth>} />
         <Route path="/messages" element={<RequireAuth><Messages /></RequireAuth>} />
+        <Route path="/my-bids" element={<RequireAuth><MyBids /></RequireAuth>} />
         <Route path="/defis" element={<Defis />} />
         <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
         <Route path="/admin/login" element={<AdminLogin />} />

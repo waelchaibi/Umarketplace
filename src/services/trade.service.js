@@ -13,8 +13,26 @@ export async function offer({ fromUserId, toUserId, offeredProductId, requestedP
   return offer;
 }
 
-export async function listReceived(userId) { return await TradeOffer.findAll({ where: { toUserId: userId }, order: [['createdAt', 'DESC']] }); }
-export async function listSent(userId) { return await TradeOffer.findAll({ where: { fromUserId: userId }, order: [['createdAt', 'DESC']] }); }
+export async function listReceived(userId) {
+  return await TradeOffer.findAll({
+    where: { toUserId: userId },
+    order: [['createdAt', 'DESC']],
+    include: [
+      { model: Product, as: 'offeredProduct', attributes: ['id', 'title'] },
+      { model: Product, as: 'requestedProduct', attributes: ['id', 'title'] }
+    ]
+  });
+}
+export async function listSent(userId) {
+  return await TradeOffer.findAll({
+    where: { fromUserId: userId },
+    order: [['createdAt', 'DESC']],
+    include: [
+      { model: Product, as: 'offeredProduct', attributes: ['id', 'title'] },
+      { model: Product, as: 'requestedProduct', attributes: ['id', 'title'] }
+    ]
+  });
+}
 
 export async function accept({ offerId, userId }) {
   return await sequelize.transaction(async (t) => {

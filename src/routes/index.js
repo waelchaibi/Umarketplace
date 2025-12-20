@@ -8,6 +8,7 @@ import tradeRoutes from './trade.routes.js';
 import messageRoutes from './message.routes.js';
 import walletRoutes from './wallet.routes.js';
 import defisRoutes from './defis.routes.js';
+import bidRoutes from './bid.routes.js';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/trades', tradeRoutes);
 router.use('/messages', messageRoutes);
 router.use('/wallet', walletRoutes);
 router.use('/defis', defisRoutes);
+router.use('/bids', bidRoutes);
 
 export default router;

@@ -45,13 +45,13 @@ export default function Home() {
 			<section className="mb-12">
 				<div className="max-w-6xl mx-auto overflow-hidden rinato-card">
 					<div className="px-6 py-14 grid lg:grid-cols-2 gap-10 items-center">
-						<div>
+					<div>
 							<div className="rinato-eyebrow mb-2">Maison de Rework</div>
 							<h1 className="rinato-h1 mb-4">Chaque pièce renaît.</h1>
 							<p className="text-slateLight/80 text-base md:text-lg mb-6 max-w-prose">
 								Découvrez des pièces uniques, retravaillées avec exigence. Entre atelier et éditorial, le rework comme un art.
 							</p>
-							<div className="flex gap-3">
+						<div className="flex gap-3">
 								<a className="rinato-cta" href="#featured">Collection</a>
 								<a className="rinato-cta" href="#auctions">Enchères</a>
 							</div>

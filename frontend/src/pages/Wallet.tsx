@@ -18,9 +18,9 @@ export default function Wallet() {
 
 	const add = async () => {
 		try {
-			await axios.post('/wallet/add-funds', { amount })
+		await axios.post('/wallet/add-funds', { amount })
 			toast.success('Fonds ajoutés')
-			await load()
+		await load()
 		} catch (e: any) {
 			toast.error(e?.response?.data?.error || 'Échec de l’ajout de fonds')
 		}

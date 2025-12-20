@@ -24,7 +24,7 @@ export default function Profile() {
 
 	const save = async () => {
 		try {
-			await axios.put('/auth/profile', { firstName, lastName })
+		await axios.put('/auth/profile', { firstName, lastName })
 			toast.success('Profil enregistré')
 		} catch (e: any) {
 			toast.error(e?.response?.data?.error || 'Échec de sauvegarde')

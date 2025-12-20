@@ -1,4 +1,5 @@
 import { sequelize, Auction, Bid, Product, User, Transaction } from '../models/index.js';
+import { Op } from 'sequelize';
 import { getIo } from '../config/socket.js';
 
 const MIN_INCREMENT = 1; // minimal increment
@@ -33,7 +34,17 @@ export async function listActive() {
 }
 
 export async function getById(id) {
-  const auction = await Auction.findByPk(id, { include: [{ model: Product, as: 'product' }, { model: Bid, as: 'bids' }] });
+  const auction = await Auction.findByPk(id, {
+    include: [
+      { model: Product, as: 'product' },
+      {
+        model: Bid,
+        as: 'bids',
+        include: [{ model: User, as: 'bidder', attributes: ['id', 'username'] }],
+        order: [['createdAt', 'DESC']]
+      }
+    ]
+  });
   if (!auction) throw Object.assign(new Error('Auction not found'), { status: 404 });
   return auction;
 }
@@ -50,6 +61,42 @@ export async function placeBid({ auctionId, bidderId, amount }) {
 
     const minAcceptable = Number(auction.currentBid || auction.startingPrice) + MIN_INCREMENT;
     if (Number(amount) < minAcceptable) throw Object.assign(new Error(`Minimum bid is ${minAcceptable}`), { status: 400 });
+
+    // Balance checks and holds
+    // Release previous highest bidder hold (if any)
+    if (auction.currentBidderId) {
+      const prevBidder = await User.findByPk(auction.currentBidderId, { transaction: t, lock: t.LOCK.UPDATE });
+      const prevHold = await Transaction.findOne({
+        where: {
+          fromUserId: auction.currentBidderId,
+          productId: auction.productId,
+          type: 'auction_hold',
+          status: 'pending'
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE
+      });
+      if (prevHold) {
+        prevBidder.balance = Number(prevBidder.balance) + Number(prevHold.amount);
+        await prevBidder.save({ transaction: t });
+        prevHold.status = 'cancelled';
+        await prevHold.save({ transaction: t });
+      }
+    }
+
+    // Place hold for new bidder
+    const bidder = await User.findByPk(bidderId, { transaction: t, lock: t.LOCK.UPDATE });
+    if (Number(bidder.balance) < Number(amount)) throw Object.assign(new Error('Insufficient balance'), { status: 400 });
+    bidder.balance = Number(bidder.balance) - Number(amount);
+    await bidder.save({ transaction: t });
+    await Transaction.create({
+      fromUserId: bidderId,
+      toUserId: auction.sellerId,
+      productId: auction.productId,
+      type: 'auction_hold',
+      amount: Number(amount),
+      status: 'pending'
+    }, { transaction: t });
 
     const bid = await Bid.create({ auctionId, bidderId, amount }, { transaction: t });
     auction.currentBid = amount;
@@ -81,7 +128,7 @@ export async function cancel({ auctionId, sellerId }) {
 
 export async function closeExpired() {
   const now = new Date();
-  const expired = await Auction.findAll({ where: { status: 'active', endTime: { [sequelize.Op.lte]: now } } });
+  const expired = await Auction.findAll({ where: { status: 'active', endTime: { [Op.lte]: now } } });
   for (const auction of expired) {
     // Close in a transaction
     await sequelize.transaction(async (t) => {
@@ -93,21 +140,42 @@ export async function closeExpired() {
         const winner = await User.findByPk(a.currentBidderId, { transaction: t, lock: t.LOCK.UPDATE });
         const seller = await User.findByPk(a.sellerId, { transaction: t, lock: t.LOCK.UPDATE });
         const price = Number(a.currentBid);
-        if (Number(winner.balance) >= price) {
-          winner.balance = Number(winner.balance) - price;
+        // Check if there is an existing hold
+        const hold = await Transaction.findOne({
+          where: { fromUserId: winner.id, productId: product.id, type: 'auction_hold', status: 'pending' },
+          transaction: t,
+          lock: t.LOCK.UPDATE
+        });
+        if (hold) {
+          // Funds already held; credit seller and convert hold to final
           seller.balance = Number(seller.balance) + price;
-          await winner.save({ transaction: t });
           await seller.save({ transaction: t });
+          hold.type = 'auction_win';
+          hold.toUserId = seller.id;
+          hold.status = 'completed';
+          await hold.save({ transaction: t });
 
           product.ownerId = winner.id;
           product.status = 'sold';
           await product.save({ transaction: t });
-
-          await Transaction.create({ fromUserId: winner.id, toUserId: seller.id, productId: product.id, type: 'auction_win', amount: price, status: 'completed' }, { transaction: t });
         } else {
-          // Winner cannot pay: revert to available
-          product.status = 'available';
-          await product.save({ transaction: t });
+          // Legacy path: charge winner now if enough balance
+          if (Number(winner.balance) >= price) {
+            winner.balance = Number(winner.balance) - price;
+            seller.balance = Number(seller.balance) + price;
+            await winner.save({ transaction: t });
+            await seller.save({ transaction: t });
+
+            product.ownerId = winner.id;
+            product.status = 'sold';
+            await product.save({ transaction: t });
+
+            await Transaction.create({ fromUserId: winner.id, toUserId: seller.id, productId: product.id, type: 'auction_win', amount: price, status: 'completed' }, { transaction: t });
+          } else {
+            // Winner cannot pay: revert to available
+            product.status = 'available';
+            await product.save({ transaction: t });
+          }
         }
       } else {
         // No bids, make product available again

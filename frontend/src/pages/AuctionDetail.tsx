@@ -55,14 +55,37 @@ export default function AuctionDetail() {
 
 	return (
 		<div className="p-6 max-w-3xl mx-auto">
-			<div className="rounded-2xl p-6 bg-white dark:bg-night-800/60 border border-black/5 dark:border-white/10 shadow-card backdrop-blur-xs">
-				<h1 className="text-3xl font-display font-semibold mb-2">{auction.product?.title || `Auction #${auction.id}`}</h1>
-				<p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Ends: {new Date(auction.endTime).toLocaleString()}</p>
-				<p className="text-xl font-bold mb-4">Current bid: {auction.currentBid ?? auction.startingPrice}</p>
+			<div className="rinato-card p-6">
+				<h1 className="rinato-h2 mb-2">{auction.product?.title || `Auction #${auction.id}`}</h1>
+				<p className="text-sm text-slateLight/80 mb-4">Ends: {new Date(auction.endTime).toLocaleString()}</p>
+				<p className="text-2xl font-sans font-bold mb-4">Current bid: € {auction.currentBid ?? auction.startingPrice}</p>
 				<div className="flex gap-2">
-					<input className="flex-1 px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 focus:outline-none focus:ring-2 focus:ring-accent-blue/50" type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} />
-					<button className="px-4 py-2 rounded bg-gradient-to-r from-accent-purple to-accent-blue text-white shadow hover:opacity-90 transition" onClick={place}>Place bid</button>
+					<input className="flex-1 px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-rinato-copper" type="number" value={amount as any} onChange={e => setAmount(Number(e.target.value))} />
+					<button className="rinato-cta" onClick={place}>Place bid</button>
 				</div>
+        {/* Bid history */}
+        <div className="mt-6">
+          <div className="rinato-h3 mb-2">Historique des enchères</div>
+          <div className="border border-white/10">
+            <div className="grid grid-cols-3 text-sm bg-white/5">
+              <div className="px-3 py-2">Utilisateur</div>
+              <div className="px-3 py-2">Montant</div>
+              <div className="px-3 py-2">Date</div>
+            </div>
+            <div className="max-h-64 overflow-auto">
+              {(auction.bids || []).slice().sort((a:any,b:any)=> (new Date(b.createdAt)).getTime() - (new Date(a.createdAt)).getTime()).map((b:any)=>(
+                <div key={b.id} className="grid grid-cols-3 text-sm border-t border-white/10">
+                  <div className="px-3 py-2">{b.bidder?.username || b.bidderId}</div>
+                  <div className="px-3 py-2">€ {b.amount}</div>
+                  <div className="px-3 py-2">{new Date(b.createdAt).toLocaleString()}</div>
+                </div>
+              ))}
+              {(!auction.bids || auction.bids.length===0) && (
+                <div className="px-3 py-3 text-sm text-slateLight/70">Aucune enchère pour le moment.</div>
+              )}
+            </div>
+          </div>
+        </div>
 			</div>
 		</div>
 	)
