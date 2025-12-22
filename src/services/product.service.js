@@ -68,7 +68,7 @@ export async function create({ adminId, title, description, category, originalPr
 export async function update({ id, changes }) {
   const product = await Product.findByPk(id);
   if (!product) throw Object.assign(new Error('Product not found'), { status: 404 });
-  const updatable = ['title', 'description', 'category', 'originalPrice', 'currentPrice', 'status', 'condition', 'images', 'ownerId'];
+  const updatable = ['title', 'description', 'category', 'originalPrice', 'currentPrice', 'status', 'condition', 'images', 'ownerId', 'isHidden'];
   updatable.forEach((f) => { if (changes[f] !== undefined) product[f] = changes[f]; });
   await product.save();
   return product;
