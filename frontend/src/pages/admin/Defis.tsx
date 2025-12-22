@@ -113,38 +113,38 @@ export default function AdminDefis() {
 	return (
 		<div className="p-6 max-w-5xl mx-auto">
 			<h1 className="text-2xl font-semibold mb-4">Admin - Défis</h1>
-			<div className="rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 p-4 mb-6">
-				<h2 className="text-lg font-medium mb-3">Créer un nouveau défi</h2>
+			<div className="rinato-card p-4 mb-6">
+				<h2 className="rinato-h3 mb-3">Créer un nouveau défi</h2>
 				<div className="grid gap-3">
 					<div className="grid grid-cols-2 gap-3">
 						<div>
-							<label className="block text-sm mb-1">Type</label>
-							<select className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as any }))}>
+							<label className="block text-sm text-slateLight/80 mb-1">Type</label>
+							<select className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as any }))}>
 								<option value="text">Texte</option>
 								<option value="qcm">QCM</option>
 							</select>
 						</div>
 						<div>
-							<label className="block text-sm mb-1">Image (optionnel)</label>
-							<input type="file" accept="image/*" onChange={(e) => setForm(f => ({ ...f, image: e.target.files?.[0] || null }))} />
+							<label className="block text-sm text-slateLight/80 mb-1">Image (optionnel)</label>
+							<input className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight" type="file" accept="image/*" onChange={(e) => setForm(f => ({ ...f, image: e.target.files?.[0] || null }))} />
 						</div>
 					</div>
 					<div>
-						<label htmlFor="title" className="block text-sm mb-1">Titre</label>
-						<input id="title" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+						<label htmlFor="title" className="block text-sm text-slateLight/80 mb-1">Titre</label>
+						<input id="title" className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
 					</div>
 					<div>
-						<label htmlFor="question" className="block text-sm mb-1">Question</label>
-						<textarea id="question" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" rows={3} value={form.question} onChange={e => setForm({ ...form, question: e.target.value })} />
+						<label htmlFor="question" className="block text-sm text-slateLight/80 mb-1">Question</label>
+						<textarea id="question" className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" rows={3} value={form.question} onChange={e => setForm({ ...form, question: e.target.value })} />
 					</div>
 					{form.type === 'text' ? (
 						<div>
-							<label htmlFor="correctAnswer" className="block text-sm mb-1">Bonne réponse (texte exact)</label>
-							<input id="correctAnswer" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.correctAnswer} onChange={e => setForm({ ...form, correctAnswer: e.target.value })} />
+							<label htmlFor="correctAnswer" className="block text-sm text-slateLight/80 mb-1">Bonne réponse (texte exact)</label>
+							<input id="correctAnswer" className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" value={form.correctAnswer} onChange={e => setForm({ ...form, correctAnswer: e.target.value })} />
 						</div>
 					) : (
 						<div className="grid gap-2">
-							<label className="block text-sm">Options (QCM)</label>
+							<label className="block text-sm text-slateLight/80">Options (QCM)</label>
 							{form.options.map((opt, idx) => (
 								<div key={idx} className="flex items-center gap-2">
 									<input
@@ -155,7 +155,7 @@ export default function AdminDefis() {
 										title="Bonne réponse"
 									/>
 									<input
-										className="flex-1 px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5"
+										className="flex-1 px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50"
 										placeholder={`Option ${idx + 1}`}
 										value={opt}
 										onChange={(e) => {
@@ -167,17 +167,17 @@ export default function AdminDefis() {
 								</div>
 							))}
 							<div className="flex gap-2">
-								<button type="button" className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10" onClick={() => setForm(f => ({ ...f, options: [...f.options, ''] }))}>Ajouter</button>
-								<button type="button" className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10" onClick={() => setForm(f => ({ ...f, options: f.options.length > 2 ? f.options.slice(0, -1) : f.options }))}>Retirer</button>
+								<button type="button" className="px-3 py-1 bg-white/5 border border-white/10" onClick={() => setForm(f => ({ ...f, options: [...f.options, ''] }))}>Ajouter</button>
+								<button type="button" className="px-3 py-1 bg-white/5 border border-white/10" onClick={() => setForm(f => ({ ...f, options: f.options.length > 2 ? f.options.slice(0, -1) : f.options }))}>Retirer</button>
 							</div>
 						</div>
 					)}
 					<div>
-						<label htmlFor="prize" className="block text-sm mb-1">Description du prix (optionnel)</label>
-						<input id="prize" className="w-full px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5" value={form.prizeDescription} onChange={e => setForm({ ...form, prizeDescription: e.target.value })} />
+						<label htmlFor="prize" className="block text-sm text-slateLight/80 mb-1">Description du prix (optionnel)</label>
+						<input id="prize" className="w-full px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50" value={form.prizeDescription} onChange={e => setForm({ ...form, prizeDescription: e.target.value })} />
 					</div>
 					<div className="flex justify-end">
-						<button onClick={createChallenge} disabled={submitting} className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60">
+						<button onClick={createChallenge} disabled={submitting} className="rinato-cta">
 							{submitting ? 'Création...' : 'Créer'}
 						</button>
 					</div>
@@ -186,7 +186,7 @@ export default function AdminDefis() {
 
 			<div>
 				<div className="flex items-center justify-between mb-3">
-					<h2 className="text-lg font-medium">Défis</h2>
+					<h2 className="rinato-h3">Défis</h2>
 					<div className="flex items-center gap-2">
 						<button onClick={() => setPage(p => Math.max(1, p - 1))} className="px-3 py-1 rounded bg-gray-100 dark:bg-white/10">Prev</button>
 						<span className="text-sm">Page {page}</span>
@@ -196,12 +196,12 @@ export default function AdminDefis() {
 				{loading && <div className="text-sm text-gray-500">Chargement...</div>}
 				<div className="grid gap-3">
 					{(items || []).map(c => (
-						<div key={c.id} className="rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 p-4">
+						<div key={c.id} className="rinato-card p-4">
 							<div className="flex items-start justify-between gap-4">
 								<div>
-									<h3 className="text-base font-semibold">{c.title}</h3>
-									<p className="text-sm mt-1">{c.question}</p>
-									{c.prizeDescription && <p className="text-xs text-gray-600 dark:text-white/70 mt-1">🏆 {c.prizeDescription}</p>}
+									<h3 className="font-display text-base text-slateLight">{c.title}</h3>
+									<p className="text-sm mt-1 text-slateLight">{c.question}</p>
+									{c.prizeDescription && <p className="text-xs text-slateLight/80 mt-1">🏆 {c.prizeDescription}</p>}
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{c.status}</span>

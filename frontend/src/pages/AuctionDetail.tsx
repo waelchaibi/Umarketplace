@@ -85,7 +85,7 @@ export default function AuctionDetail() {
               )}
             </div>
           </div>
-        </div>
+				</div>
 			</div>
 		</div>
 	)

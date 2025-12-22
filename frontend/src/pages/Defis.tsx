@@ -77,22 +77,22 @@ export default function Defis() {
 
 	return (
 		<div className="p-6 max-w-4xl mx-auto">
-			<h1 className="text-2xl font-semibold mb-4">Défis actifs</h1>
-			{loading && <div className="text-sm text-gray-500">Chargement...</div>}
-			{!loading && error && <div className="text-sm text-red-600">{error}</div>}
+			<h1 className="rinato-h2 mb-4">Défis actifs</h1>
+			{loading && <div className="text-sm text-slateLight/70">Chargement...</div>}
+			{!loading && error && <div className="text-sm text-red-400">{error}</div>}
 			<div className="grid gap-4">
 				{(items || []).map((c) => {
 					const r = result[c.id]
 					return (
-						<div key={c.id} className="rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 p-4">
+						<div key={c.id} className="rinato-card p-4">
 							<div className="flex items-start justify-between gap-4">
 								<div>
-									<h2 className="text-lg font-medium">{c.title}</h2>
-									{c.prizeDescription && <p className="text-sm text-gray-600 dark:text-white/70 mt-1">🏆 {c.prizeDescription}</p>}
+									<h2 className="font-display text-lg text-slateLight">{c.title}</h2>
+									{c.prizeDescription && <p className="text-sm text-slateLight/80 mt-1">🏆 {c.prizeDescription}</p>}
 								</div>
 								<span className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">{c.status}</span>
 							</div>
-							<p className="mt-3">{c.question}</p>
+							<p className="mt-3 text-slateLight">{c.question}</p>
 							{c.imageUrl && (
 								<div className="mt-3">
 									<img src={getImageUrl(c.imageUrl)} alt={c.title} className="max-h-64 rounded border border-black/10 dark:border-white/10 object-contain" />
@@ -101,7 +101,7 @@ export default function Defis() {
 							{c.type === 'qcm' ? (
 								<div className="mt-4 space-y-2">
 									{(c.options || []).map((opt, idx) => (
-										<label key={idx} className="flex items-center gap-2">
+										<label key={idx} className="flex items-center gap-2 text-slateLight">
 											<input
 												type="radio"
 												name={`qcm-${c.id}`}
@@ -115,7 +115,7 @@ export default function Defis() {
 										<button
 											onClick={() => onSubmit(c.id)}
 											disabled={submittingId === c.id || selected[c.id] === null || selected[c.id] === undefined}
-											className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
+											className="rinato-cta rinato-cta--sm disabled:opacity-60"
 										>
 											{submittingId === c.id ? 'Envoi...' : 'Valider'}
 										</button>
@@ -130,12 +130,12 @@ export default function Defis() {
 										value={answers[c.id] || ''}
 										onChange={(e) => setAnswers(prev => ({ ...prev, [c.id]: e.target.value }))}
 										placeholder="Votre réponse"
-										className="flex-1 px-3 py-2 rounded border border-black/10 dark:border-white/10 bg-white dark:bg-white/5 focus:outline-none focus:ring-2 focus:ring-accent-blue/50"
+										className="flex-1 px-3 py-2 border border-white/10 bg-white/5 text-slateLight placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-rinato-copper"
 									/>
 									<button
 										onClick={() => onSubmit(c.id)}
 										disabled={submittingId === c.id}
-										className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60"
+										className="rinato-cta rinato-cta--sm disabled:opacity-60"
 									>
 										{submittingId === c.id ? 'Envoi...' : 'Envoyer'}
 									</button>
@@ -144,9 +144,9 @@ export default function Defis() {
 							{r && (
 								<div className="mt-3 text-sm">
 									{r.isCorrect ? (
-										<span className="text-green-600">Bonne réponse{r.isWinner ? " 🎉 Vous êtes le/la premier·ère gagnant·e !" : " (mais un gagnant existe déjà)"}.</span>
+										<span className="text-green-400">Bonne réponse{r.isWinner ? " 🎉 Vous êtes le/la premier·ère gagnant·e !" : " (mais un gagnant existe déjà)"}.</span>
 									) : (
-										<span className="text-red-600">Mauvaise réponse.</span>
+										<span className="text-red-400">Mauvaise réponse.</span>
 									)}
 								</div>
 							)}
@@ -155,7 +155,7 @@ export default function Defis() {
 				})}
 			</div>
 			{!loading && (items || []).length === 0 && (
-				<p className="text-sm text-gray-600 dark:text-white/70">Aucun défi actif pour le moment.</p>
+				<p className="text-sm text-slateLight/80">Aucun défi actif pour le moment.</p>
 			)}
 		</div>
 	)

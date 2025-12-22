@@ -160,21 +160,21 @@ export async function closeExpired() {
           await product.save({ transaction: t });
         } else {
           // Legacy path: charge winner now if enough balance
-          if (Number(winner.balance) >= price) {
-            winner.balance = Number(winner.balance) - price;
-            seller.balance = Number(seller.balance) + price;
-            await winner.save({ transaction: t });
-            await seller.save({ transaction: t });
+        if (Number(winner.balance) >= price) {
+          winner.balance = Number(winner.balance) - price;
+          seller.balance = Number(seller.balance) + price;
+          await winner.save({ transaction: t });
+          await seller.save({ transaction: t });
 
-            product.ownerId = winner.id;
-            product.status = 'sold';
-            await product.save({ transaction: t });
+          product.ownerId = winner.id;
+          product.status = 'sold';
+          await product.save({ transaction: t });
 
-            await Transaction.create({ fromUserId: winner.id, toUserId: seller.id, productId: product.id, type: 'auction_win', amount: price, status: 'completed' }, { transaction: t });
-          } else {
-            // Winner cannot pay: revert to available
-            product.status = 'available';
-            await product.save({ transaction: t });
+          await Transaction.create({ fromUserId: winner.id, toUserId: seller.id, productId: product.id, type: 'auction_win', amount: price, status: 'completed' }, { transaction: t });
+        } else {
+          // Winner cannot pay: revert to available
+          product.status = 'available';
+          await product.save({ transaction: t });
           }
         }
       } else {
