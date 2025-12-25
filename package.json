@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
-    "lint": "echo 'No linter configured'"
+    "lint": "echo 'No linter configured'",
+    "typecheck": "npm --prefix frontend run typecheck"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -1,8 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import axios from '../config/axios'
 import { IMG_URL } from '../config'
 import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
+
+type ProductsListResponse = {
+	items: any[]
+	total: number
+	page: number
+	pages: number
+}
 
 export default function Home() {
 	const navigate = useNavigate()
@@ -17,10 +24,10 @@ export default function Home() {
 
 	const queryParams = useMemo(() => ({ category: category || undefined, condition: condition || undefined, minPrice: minPrice || undefined, maxPrice: maxPrice || undefined, sort, order, page, limit }), [category, condition, minPrice, maxPrice, sort, order, page, limit])
 
-	const { data, isLoading, isError, refetch, isFetching } = useQuery({
+	const { data, isLoading, isError, refetch, isFetching } = useQuery<ProductsListResponse>({
 		queryKey: ['products', queryParams],
-		queryFn: async () => (await axios.get('/products', { params: queryParams })).data.data,
-		keepPreviousData: true
+		queryFn: async () => (await axios.get('/products', { params: queryParams })).data.data as ProductsListResponse,
+		placeholderData: keepPreviousData
 	})
 
 	const auctionsQuery = useQuery({
@@ -38,6 +45,7 @@ export default function Home() {
 	if (isError) return <div className="p-6">Error loading products.</div>
 
 	const items = (data?.items || []) as any[]
+	const pages = Number(data?.pages || 0)
 
 	return (
 		<div className="p-6">
@@ -159,11 +167,11 @@ export default function Home() {
 					))}
 				</ul>
 				{/* Pagination */}
-				{data?.pages > 1 && (
+				{pages > 1 && (
 					<div className="flex items-center justify-center gap-2 mt-6">
 						<button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="px-3 py-1 bg-white/5 border border-white/10 disabled:opacity-50">Préc.</button>
-						<div className="text-sm text-slateLight/80">Page {page} / {data.pages}</div>
-						<button disabled={page >= data.pages} onClick={() => setPage((p) => Math.min(data.pages, p + 1))} className="px-3 py-1 bg-white/5 border border-white/10 disabled:opacity-50">Suiv.</button>
+						<div className="text-sm text-slateLight/80">Page {page} / {pages}</div>
+						<button disabled={page >= pages} onClick={() => setPage((p) => Math.min(pages, p + 1))} className="px-3 py-1 bg-white/5 border border-white/10 disabled:opacity-50">Suiv.</button>
 					</div>
 				)}
 			</section>
